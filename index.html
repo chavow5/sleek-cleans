@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;700;800&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles.css?v=2.2">
 </head>
 <body>
 
@@ -198,113 +198,115 @@
        ========================================================================== -->
   <section class="services-section" id="services">
     <div class="container text-center">
-      <span class="section-tagline">SERVICES</span>
+      <span class="section-tagline"></span>
       <h2 class="section-title">Our Services</h2>
       <p class="section-subtitle">Premium exterior and interior cleaning services tailored to keep your Tampa Bay property gleaming year-round.</p>
 
-      <div class="services-grid-top">
-        <!-- 1. Interior Window Cleaning -->
-        <div class="flip-card" tabindex="0">
-          <div class="flip-card-inner">
-            <div class="flip-card-front card-interior-front">
-              <div class="flip-card-overlay"></div>
-              <div class="flip-card-front-content">
-                <h3>Interior Window Cleaning</h3>
-                <span class="flip-card-hint">Hover / Tap to flip</span>
+      <div class="services-grid-wrapper">
+        <div class="services-grid-top">
+          <!-- 1. Interior Window Cleaning -->
+          <div class="flip-card" tabindex="0">
+            <div class="flip-card-inner">
+              <div class="flip-card-front card-interior-front">
+                <div class="flip-card-overlay"></div>
+                <div class="flip-card-front-content">
+                  <h3>Interior Window Cleaning</h3>
+                  <span class="flip-card-hint">Hover / Tap to flip</span>
+                </div>
+              </div>
+              <div class="flip-card-back card-interior-back">
+                <div class="flip-card-overlay"></div>
+                <div class="flip-card-back-content">
+                  <h3>Interior Cleaning</h3>
+                  <p>Safe indoor cleaning including glass polishing, track detailing, sill vacuuming, and screen care without mess.</p>
+                  <a href="#quote" class="btn-card-quote btn-open-quote" data-service="Interior Window">View Details & Quote</a>
+                </div>
               </div>
             </div>
-            <div class="flip-card-back card-interior-back">
-              <div class="flip-card-overlay"></div>
-              <div class="flip-card-back-content">
-                <h3>Interior Cleaning</h3>
-                <p>Safe indoor cleaning including glass polishing, track detailing, sill vacuuming, and screen care without mess.</p>
-                <a href="#quote" class="btn-card-quote btn-open-quote" data-service="Interior Window">View Details & Quote</a>
+          </div>
+
+          <!-- 2. Exterior Window Cleaning -->
+          <div class="flip-card" tabindex="0">
+            <div class="flip-card-inner">
+              <div class="flip-card-front card-exterior-front">
+                <div class="flip-card-overlay"></div>
+                <div class="flip-card-front-content">
+                  <h3>Exterior Window Cleaning</h3>
+                  <span class="flip-card-hint">Hover / Tap to flip</span>
+                </div>
+              </div>
+              <div class="flip-card-back card-exterior-back">
+                <div class="flip-card-overlay"></div>
+                <div class="flip-card-back-content">
+                  <h3>Exterior Cleaning</h3>
+                  <p>Pure water fed pole systems and hand squeegee for streak-free windows up to 3 stories high. Removes salt & hard water.</p>
+                  <a href="#quote" class="btn-card-quote btn-open-quote" data-service="Exterior Window">View Details & Quote</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Roof Cleaning -->
+          <div class="flip-card" tabindex="0">
+            <div class="flip-card-inner">
+              <div class="flip-card-front card-roof-front">
+                <div class="flip-card-overlay"></div>
+                <div class="flip-card-front-content">
+                  <h3>Roof Cleaning</h3>
+                  <span class="flip-card-hint">Hover / Tap to flip</span>
+                </div>
+              </div>
+              <div class="flip-card-back card-roof-back">
+                <div class="flip-card-overlay"></div>
+                <div class="flip-card-back-content">
+                  <h3>Roof Soft Wash</h3>
+                  <p>Gentle soft wash chemical treatment to safely eradicate black streaks (Gloeocapsa magma), moss, and mildew without shingle wear.</p>
+                  <a href="#quote" class="btn-card-quote btn-open-quote" data-service="Roof Cleaning">View Details & Quote</a>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- 2. Exterior Window Cleaning -->
-        <div class="flip-card" tabindex="0">
-          <div class="flip-card-inner">
-            <div class="flip-card-front card-exterior-front">
-              <div class="flip-card-overlay"></div>
-              <div class="flip-card-front-content">
-                <h3>Exterior Window Cleaning</h3>
-                <span class="flip-card-hint">Hover / Tap to flip</span>
+        <div class="services-grid-bottom">
+          <!-- 4. Pressure Washing -->
+          <div class="flip-card" tabindex="0">
+            <div class="flip-card-inner">
+              <div class="flip-card-front card-pressure-front">
+                <div class="flip-card-overlay"></div>
+                <div class="flip-card-front-content">
+                  <h3>Pressure Washing</h3>
+                  <span class="flip-card-hint">Hover / Tap to flip</span>
+                </div>
               </div>
-            </div>
-            <div class="flip-card-back card-exterior-back">
-              <div class="flip-card-overlay"></div>
-              <div class="flip-card-back-content">
-                <h3>Exterior Cleaning</h3>
-                <p>Pure water fed pole systems and hand squeegee for streak-free windows up to 3 stories high. Removes salt & hard water.</p>
-                <a href="#quote" class="btn-card-quote btn-open-quote" data-service="Exterior Window">View Details & Quote</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. Roof Cleaning -->
-        <div class="flip-card" tabindex="0">
-          <div class="flip-card-inner">
-            <div class="flip-card-front card-roof-front">
-              <div class="flip-card-overlay"></div>
-              <div class="flip-card-front-content">
-                <h3>Roof Cleaning</h3>
-                <span class="flip-card-hint">Hover / Tap to flip</span>
-              </div>
-            </div>
-            <div class="flip-card-back card-roof-back">
-              <div class="flip-card-overlay"></div>
-              <div class="flip-card-back-content">
-                <h3>Roof Soft Wash</h3>
-                <p>Gentle soft wash chemical treatment to safely eradicate black streaks (Gloeocapsa magma), moss, and mildew without shingle wear.</p>
-                <a href="#quote" class="btn-card-quote btn-open-quote" data-service="Roof Cleaning">View Details & Quote</a>
+              <div class="flip-card-back card-pressure-back">
+                <div class="flip-card-overlay"></div>
+                <div class="flip-card-back-content">
+                  <h3>Pressure Washing</h3>
+                  <p>Commercial-grade surface cleaning for driveways, sidewalks, pool decks, lanais, and patios restoring bright concrete.</p>
+                  <a href="#quote" class="btn-card-quote btn-open-quote" data-service="Pressure Washing">View Details & Quote</a>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div class="services-grid-bottom">
-        <!-- 4. Pressure Washing -->
-        <div class="flip-card" tabindex="0">
-          <div class="flip-card-inner">
-            <div class="flip-card-front card-pressure-front">
-              <div class="flip-card-overlay"></div>
-              <div class="flip-card-front-content">
-                <h3>Pressure Washing</h3>
-                <span class="flip-card-hint">Hover / Tap to flip</span>
+          <!-- 5. Paver Sealing -->
+          <div class="flip-card" tabindex="0">
+            <div class="flip-card-inner">
+              <div class="flip-card-front card-paver-front">
+                <div class="flip-card-overlay"></div>
+                <div class="flip-card-front-content">
+                  <h3>Paver Sealing</h3>
+                  <span class="flip-card-hint">Hover / Tap to flip</span>
+                </div>
               </div>
-            </div>
-            <div class="flip-card-back card-pressure-back">
-              <div class="flip-card-overlay"></div>
-              <div class="flip-card-back-content">
-                <h3>Pressure Washing</h3>
-                <p>Commercial-grade surface cleaning for driveways, sidewalks, pool decks, lanais, and patios restoring bright concrete.</p>
-                <a href="#quote" class="btn-card-quote btn-open-quote" data-service="Pressure Washing">View Details & Quote</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 5. Paver Sealing -->
-        <div class="flip-card" tabindex="0">
-          <div class="flip-card-inner">
-            <div class="flip-card-front card-paver-front">
-              <div class="flip-card-overlay"></div>
-              <div class="flip-card-front-content">
-                <h3>Paver Sealing</h3>
-                <span class="flip-card-hint">Hover / Tap to flip</span>
-              </div>
-            </div>
-            <div class="flip-card-back card-paver-back">
-              <div class="flip-card-overlay"></div>
-              <div class="flip-card-back-content">
-                <h3>Paver Sealing</h3>
-                <p>Premium protective sealants to prevent weed growth, protect against UV fading, resist oil stains, and enhance rich natural color.</p>
-                <a href="#quote" class="btn-card-quote btn-open-quote" data-service="Paver Sealing">View Details & Quote</a>
+              <div class="flip-card-back card-paver-back">
+                <div class="flip-card-overlay"></div>
+                <div class="flip-card-back-content">
+                  <h3>Paver Sealing</h3>
+                  <p>Premium protective sealants to prevent weed growth, protect against UV fading, resist oil stains, and enhance rich natural color.</p>
+                  <a href="#quote" class="btn-card-quote btn-open-quote" data-service="Paver Sealing">View Details & Quote</a>
+                </div>
               </div>
             </div>
           </div>
