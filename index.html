@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;700;800&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/styles.css?v=2.2">
+  <link rel="stylesheet" href="css/styles.css?v=2.5">
 </head>
 <body>
 
@@ -72,8 +72,10 @@
             <a href="#services" class="dropdown-item btn-open-quote" data-service="Exterior Window">Exterior Window Cleaning</a>
             <a href="#services" class="dropdown-item btn-open-quote" data-service="Interior Window">Interior Window Cleaning</a>
             <a href="#services" class="dropdown-item btn-open-quote" data-service="Pressure Washing">Pressure Washing</a>
+            <a href="#services" class="dropdown-item btn-open-quote" data-service="Roof Cleaning">Roof Soft Washing</a>
             <a href="#services" class="dropdown-item btn-open-quote" data-service="Paver Sealing">Paver Sealing</a>
-            <a href="#services" class="dropdown-item btn-open-quote" data-service="Roof Cleaning">Roof Cleaning</a>
+            <a href="#services" class="dropdown-item btn-open-quote" data-service="Solar Panel">Solar Panel Cleaning</a>
+            <a href="#services" class="dropdown-item btn-open-quote" data-service="Gutter Cleaning">Gutter Cleaning</a>
           </div>
         </li>
         <li><a href="#memberships" class="nav-link">Memberships</a></li>
@@ -109,8 +111,10 @@
           <a href="#services" class="mobile-nav-link btn-open-quote" data-service="Exterior Window">Exterior Windows</a>
           <a href="#services" class="mobile-nav-link btn-open-quote" data-service="Interior Window">Interior Windows</a>
           <a href="#services" class="mobile-nav-link btn-open-quote" data-service="Pressure Washing">Pressure Washing</a>
+          <a href="#services" class="mobile-nav-link btn-open-quote" data-service="Roof Cleaning">Roof Soft Washing</a>
           <a href="#services" class="mobile-nav-link btn-open-quote" data-service="Paver Sealing">Paver Sealing</a>
-          <a href="#services" class="mobile-nav-link btn-open-quote" data-service="Roof Cleaning">Roof Cleaning</a>
+          <a href="#services" class="mobile-nav-link btn-open-quote" data-service="Solar Panel">Solar Panel Cleaning</a>
+          <a href="#services" class="mobile-nav-link btn-open-quote" data-service="Gutter Cleaning">Gutter Cleaning</a>
         </div>
       </li>
       <li><a href="#memberships" class="mobile-nav-link">Memberships</a></li>
@@ -191,6 +195,7 @@
         </div>
       </div>
     </div>
+    
   </section>
 
   <!-- ==========================================================================
@@ -204,7 +209,28 @@
 
       <div class="services-grid-wrapper">
         <div class="services-grid-top">
-          <!-- 1. Interior Window Cleaning -->
+          <!-- 1. Exterior Window Cleaning -->
+          <div class="flip-card" tabindex="0">
+            <div class="flip-card-inner">
+              <div class="flip-card-front card-exterior-front">
+                <div class="flip-card-overlay"></div>
+                <div class="flip-card-front-content">
+                  <h3>Exterior Window Cleaning</h3>
+                  <span class="flip-card-hint">Hover / Tap to flip</span>
+                </div>
+              </div>
+              <div class="flip-card-back card-exterior-back">
+                <div class="flip-card-overlay"></div>
+                <div class="flip-card-back-content">
+                  <h3>Exterior Cleaning</h3>
+                  <p>Pure water fed pole systems and precision squeegees for streak-free windows up to 3 stories. Removes salt & hard water.</p>
+                  <a href="#quote" class="btn-card-quote btn-open-quote" data-service="Exterior Window">View Details & Quote</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Interior Window Cleaning -->
           <div class="flip-card" tabindex="0">
             <div class="flip-card-inner">
               <div class="flip-card-front card-interior-front">
@@ -225,51 +251,7 @@
             </div>
           </div>
 
-          <!-- 2. Exterior Window Cleaning -->
-          <div class="flip-card" tabindex="0">
-            <div class="flip-card-inner">
-              <div class="flip-card-front card-exterior-front">
-                <div class="flip-card-overlay"></div>
-                <div class="flip-card-front-content">
-                  <h3>Exterior Window Cleaning</h3>
-                  <span class="flip-card-hint">Hover / Tap to flip</span>
-                </div>
-              </div>
-              <div class="flip-card-back card-exterior-back">
-                <div class="flip-card-overlay"></div>
-                <div class="flip-card-back-content">
-                  <h3>Exterior Cleaning</h3>
-                  <p>Pure water fed pole systems and hand squeegee for streak-free windows up to 3 stories high. Removes salt & hard water.</p>
-                  <a href="#quote" class="btn-card-quote btn-open-quote" data-service="Exterior Window">View Details & Quote</a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 3. Roof Cleaning -->
-          <div class="flip-card" tabindex="0">
-            <div class="flip-card-inner">
-              <div class="flip-card-front card-roof-front">
-                <div class="flip-card-overlay"></div>
-                <div class="flip-card-front-content">
-                  <h3>Roof Cleaning</h3>
-                  <span class="flip-card-hint">Hover / Tap to flip</span>
-                </div>
-              </div>
-              <div class="flip-card-back card-roof-back">
-                <div class="flip-card-overlay"></div>
-                <div class="flip-card-back-content">
-                  <h3>Roof Soft Wash</h3>
-                  <p>Gentle soft wash chemical treatment to safely eradicate black streaks (Gloeocapsa magma), moss, and mildew without shingle wear.</p>
-                  <a href="#quote" class="btn-card-quote btn-open-quote" data-service="Roof Cleaning">View Details & Quote</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="services-grid-bottom">
-          <!-- 4. Pressure Washing -->
+          <!-- 3. Pressure Washing -->
           <div class="flip-card" tabindex="0">
             <div class="flip-card-inner">
               <div class="flip-card-front card-pressure-front">
@@ -290,6 +272,29 @@
             </div>
           </div>
 
+          <!-- 4. Roof Soft Washing -->
+          <div class="flip-card" tabindex="0">
+            <div class="flip-card-inner">
+              <div class="flip-card-front card-roof-front">
+                <div class="flip-card-overlay"></div>
+                <div class="flip-card-front-content">
+                  <h3>Roof Soft Washing</h3>
+                  <span class="flip-card-hint">Hover / Tap to flip</span>
+                </div>
+              </div>
+              <div class="flip-card-back card-roof-back">
+                <div class="flip-card-overlay"></div>
+                <div class="flip-card-back-content">
+                  <h3>Roof Soft Wash</h3>
+                  <p>Gentle soft wash chemical treatment to safely eradicate black streaks (Gloeocapsa magma), moss, and mildew without shingle wear.</p>
+                  <a href="#quote" class="btn-card-quote btn-open-quote" data-service="Roof Cleaning">View Details & Quote</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="services-grid-bottom">
           <!-- 5. Paver Sealing -->
           <div class="flip-card" tabindex="0">
             <div class="flip-card-inner">
@@ -306,6 +311,48 @@
                   <h3>Paver Sealing</h3>
                   <p>Premium protective sealants to prevent weed growth, protect against UV fading, resist oil stains, and enhance rich natural color.</p>
                   <a href="#quote" class="btn-card-quote btn-open-quote" data-service="Paver Sealing">View Details & Quote</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Solar Panel Cleaning -->
+          <div class="flip-card" tabindex="0">
+            <div class="flip-card-inner">
+              <div class="flip-card-front card-solar-front">
+                <div class="flip-card-overlay"></div>
+                <div class="flip-card-front-content">
+                  <h3>Solar Panel Cleaning</h3>
+                  <span class="flip-card-hint">Hover / Tap to flip</span>
+                </div>
+              </div>
+              <div class="flip-card-back card-solar-back">
+                <div class="flip-card-overlay"></div>
+                <div class="flip-card-back-content">
+                  <h3>Solar Panel Care</h3>
+                  <p>Specialized deionized pure water and soft-bristle brush cleaning to restore peak photovoltaic energy efficiency safely.</p>
+                  <a href="#quote" class="btn-card-quote btn-open-quote" data-service="Solar Panel">View Details & Quote</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. Gutter Cleaning -->
+          <div class="flip-card" tabindex="0">
+            <div class="flip-card-inner">
+              <div class="flip-card-front card-gutter-front">
+                <div class="flip-card-overlay"></div>
+                <div class="flip-card-front-content">
+                  <h3>Gutter Cleaning</h3>
+                  <span class="flip-card-hint">Hover / Tap to flip</span>
+                </div>
+              </div>
+              <div class="flip-card-back card-gutter-back">
+                <div class="flip-card-overlay"></div>
+                <div class="flip-card-back-content">
+                  <h3>Gutter & Downspout Care</h3>
+                  <p>Complete removal of leaves, dirt, and clogs from gutters and downspouts to prevent water overflow and roofline damage.</p>
+                  <a href="#quote" class="btn-card-quote btn-open-quote" data-service="Gutter Cleaning">View Details & Quote</a>
                 </div>
               </div>
             </div>
@@ -871,6 +918,14 @@
               <label class="service-checkbox-card">
                 <input type="checkbox" class="service-checkbox" value="paver">
                 <span>Paver Sealing</span>
+              </label>
+              <label class="service-checkbox-card">
+                <input type="checkbox" class="service-checkbox" value="solar">
+                <span>Solar Panel Cleaning</span>
+              </label>
+              <label class="service-checkbox-card">
+                <input type="checkbox" class="service-checkbox" value="gutter">
+                <span>Gutter Cleaning</span>
               </label>
             </div>
           </div>

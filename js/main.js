@@ -138,8 +138,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function openQuoteModal(serviceName = null) {
     if (serviceName) {
+      const s = serviceName.toLowerCase();
       serviceCheckboxes.forEach(cb => {
-        if (cb.value.toLowerCase().includes(serviceName.toLowerCase())) {
+        const val = cb.value.toLowerCase();
+        let match = false;
+        if (s.includes('ext') && val === 'window_ext') match = true;
+        else if (s.includes('int') && val === 'window_int') match = true;
+        else if (s.includes('press') && val === 'pressure') match = true;
+        else if (s.includes('roof') && val === 'roof') match = true;
+        else if (s.includes('paver') && val === 'paver') match = true;
+        else if (s.includes('solar') && val === 'solar') match = true;
+        else if (s.includes('gutter') && val === 'gutter') match = true;
+
+        if (match) {
           cb.checked = true;
           cb.closest('.service-checkbox-card').classList.add('selected');
         }
@@ -184,7 +195,9 @@ document.addEventListener('DOMContentLoaded', () => {
       window_int: 80,
       pressure: 150,
       roof: 250,
-      paver: 220
+      paver: 220,
+      solar: 140,
+      gutter: 130
     };
 
     let selectedCount = 0;

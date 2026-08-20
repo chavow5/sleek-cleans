@@ -673,16 +673,16 @@ h1, h2, h3, h4, h5, h6 {
 
 .services-grid-top {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
-  margin-bottom: 30px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
 }
 
 .services-grid-bottom {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 30px;
-  max-width: 800px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
@@ -813,11 +813,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Background image assignments for flip cards */
-.card-interior-front, .card-interior-back { background-image: url('../assets/images/interior-window-cleaning.webp'); }
 .card-exterior-front, .card-exterior-back { background-image: url('../assets/images/sleek-cleaning-tampa-scaled.webp'); }
-.card-roof-front, .card-roof-back { background-image: url('../assets/images/Roof-Cleaning-Monmouth-County.jpg'); }
-.card-pressure-front, .card-pressure-back { background-image: url('../assets/images/pressure-washing-tampa-scaled.webp'); }
-.card-paver-front, .card-paver-back { background-image: url('../assets/images/paver-sealing-tampa.webp'); }
+.card-interior-front, .card-interior-back { background-image: url('../assets/images/interior-window-cleaning-real.jpg'); }
+.card-pressure-front, .card-pressure-back { background-image: url('../assets/images/pressure-washing-pool-deck.jpg'); }
+.card-roof-front, .card-roof-back { background-image: url('../assets/images/roof-soft-wash.jpg'); }
+.card-paver-front, .card-paver-back { background-image: url('../assets/images/paver-pressure-pool.jpg'); }
+.card-solar-front, .card-solar-back { background-image: url('../assets/images/solar-panel-cleaning.jpg'); }
+.card-gutter-front, .card-gutter-back { background-image: url('../assets/images/gutter-cleaning.jpg'); }
 
 /* ==========================================================================
    MID-PAGE CALLOUT BANNER
