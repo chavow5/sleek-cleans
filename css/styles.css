@@ -422,6 +422,34 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 4px 15px rgba(6, 37, 45, 0.3);
 }
 
+.btn-nav-call-mobile {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+  padding: 9px 18px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: var(--radius-pill);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: var(--transition);
+}
+
+.btn-nav-call-mobile:hover {
+  background-color: #0d3844;
+  color: var(--color-white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(6, 37, 45, 0.3);
+}
+
+.btn-nav-call-mobile svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
 .menu-toggle {
   display: none;
   flex-direction: column;
@@ -533,7 +561,7 @@ h1, h2, h3, h4, h5, h6 {
 .hero {
   position: relative;
   min-height: 720px;
-  background-image: url('../assets/images/sleek-cleaning-tampa-scaled.webp');
+  background-image: url('../assets/images/hero/sleek-cleaning-tampa-scaled.webp');
   background-position: center;
   background-size: cover;
   display: flex;
@@ -592,6 +620,12 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--color-white);
+}
+
+.hero-google-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 .hero-title {
@@ -813,13 +847,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Background image assignments for flip cards */
-.card-exterior-front, .card-exterior-back { background-image: url('../assets/images/sleek-cleaning-tampa-scaled.webp'); }
-.card-interior-front, .card-interior-back { background-image: url('../assets/images/interior-window-cleaning-real.jpg'); }
-.card-pressure-front, .card-pressure-back { background-image: url('../assets/images/pressure-washing-pool-deck.jpg'); }
-.card-roof-front, .card-roof-back { background-image: url('../assets/images/roof-soft-wash.jpg'); }
-.card-paver-front, .card-paver-back { background-image: url('../assets/images/paver-pressure-pool.jpg'); }
-.card-solar-front, .card-solar-back { background-image: url('../assets/images/solar-panel-cleaning.jpg'); }
-.card-gutter-front, .card-gutter-back { background-image: url('../assets/images/gutter-cleaning.jpg'); }
+.card-exterior-front, .card-exterior-back { background-image: url('../assets/images/hero/sleek-cleaning-tampa-scaled.webp'); }
+.card-interior-front, .card-interior-back { background-image: url('../assets/images/services/interior-window-cleaning-real.jpg'); }
+.card-pressure-front, .card-pressure-back { background-image: url('../assets/images/services/pressure-washing-pool-deck.jpg'); }
+.card-roof-front, .card-roof-back { background-image: url('../assets/images/services/roof-soft-wash.jpg'); }
+.card-paver-front, .card-paver-back { background-image: url('../assets/images/services/paver-pressure-pool.jpg'); }
+.card-solar-front, .card-solar-back { background-image: url('../assets/images/services/solar-panel-cleaning.jpg'); }
+.card-gutter-front, .card-gutter-back { background-image: url('../assets/images/services/gutter-cleaning.jpg'); }
 
 /* ==========================================================================
    MID-PAGE CALLOUT BANNER
@@ -827,7 +861,7 @@ h1, h2, h3, h4, h5, h6 {
 .callout-banner {
   position: relative;
   min-height: 480px;
-  background-image: url('../assets/images/interior-window-cleaning.webp');
+  background-image: url('../assets/images/services/interior-window-cleaning.webp');
   background-position: center;
   background-size: cover;
   display: flex;
@@ -1001,80 +1035,298 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 40px;
 }
 
-.reviews-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
-  transition: transform 0.5s ease;
+/* --- Reviews Looping Carousel Slider --- */
+.reviews-slider-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: 28px;
 }
 
-.review-card {
+.reviews-slider-wrapper {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  padding: 10px 4px 20px 4px;
+}
+
+.reviews-slider-track {
+  display: flex;
+  align-items: stretch;
+  gap: 24px;
+  transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
+}
+
+.reviews-slider-track .review-card {
+  flex: 0 0 calc((100% - 48px) / 3);
+  min-width: 0;
+  box-sizing: border-box;
   background-color: var(--color-white);
   border-radius: var(--radius-lg);
-  padding: 32px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  padding: 24px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
   border: 1px solid var(--color-card-border);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease;
+}
+
+.reviews-slider-track .review-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 26px rgba(45, 167, 223, 0.15);
+  border-color: var(--color-primary);
+}
+
+.review-card-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.review-author-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.review-author-link:hover .review-author-info h4 {
+  color: var(--color-primary);
+}
+
+/* Slider Nav Buttons (Positioned in the middle on the sides of the cards) */
+.reviews-slider-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 15;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--color-white);
+  border: 1px solid var(--color-card-border);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   transition: var(--transition);
 }
 
-.review-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 30px rgba(45, 167, 223, 0.15);
-  border-color: var(--color-accent);
+.reviews-slider-btn:hover {
+  background: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 20px rgba(45, 167, 223, 0.35);
 }
+
+.reviews-slider-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.reviews-slider-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  pointer-events: none;
+}
+
+.reviews-slider-prev {
+  left: -20px;
+}
+
+.reviews-slider-next {
+  right: -20px;
+}
+
+/* Dots Navigation */
+.reviews-slider-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.reviews-slider-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-card-border);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.reviews-slider-dot.active {
+  background: var(--color-primary);
+  transform: scale(1.3);
+}
+
+@media (max-width: 1200px) {
+  .reviews-slider-prev {
+    left: -10px;
+  }
+  .reviews-slider-next {
+    right: -10px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .reviews-slider-track .review-card {
+    flex: 0 0 calc((100% - 24px) / 2);
+  }
+}
+
+@media (max-width: 768px) {
+  .reviews-slider-btn {
+    width: 40px;
+    height: 40px;
+  }
+  .reviews-slider-prev {
+    left: -6px;
+  }
+  .reviews-slider-next {
+    right: -6px;
+  }
+}
+
+@media (max-width: 640px) {
+  .reviews-slider-track .review-card {
+    flex: 0 0 100%;
+  }
+  .reviews-slider-prev {
+    left: 4px;
+  }
+  .reviews-slider-next {
+    right: 4px;
+  }
+}
+
+
+
+/* --- Expand / Toggle More Reviews Button --- */
+.reviews-toggle-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 36px;
+}
+
+.btn-reviews-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-white);
+  border: 2px solid var(--color-primary);
+  color: var(--color-primary);
+  border-radius: var(--radius-pill);
+  padding: 12px 28px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-reviews-toggle:hover {
+  background: var(--color-primary);
+  color: var(--color-white);
+  box-shadow: 0 6px 20px rgba(45, 167, 223, 0.3);
+  transform: translateY(-2px);
+}
+
+
 
 .review-card-header {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .review-avatar {
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  background: var(--color-primary);
   color: var(--color-white);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.review-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .review-author-info h4 {
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   font-weight: 700;
   color: var(--color-secondary);
+  margin-bottom: 2px;
 }
 
 .review-verified {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--color-success);
   font-weight: 600;
 }
 
 .review-stars {
   display: flex;
-  gap: 4px;
-  color: var(--color-star);
-  margin-bottom: 14px;
+  gap: 3px;
+  color: #f59e0b;
+  font-size: 1.05rem;
+  margin-bottom: 10px;
 }
 
 .review-text {
-  font-size: 0.95rem;
-  line-height: 1.6;
+  font-size: 0.9rem;
+  line-height: 1.55;
   color: #4a5568;
-  margin-bottom: 16px;
-  flex-grow: 1;
+  margin-bottom: 6px;
+  transition: all 0.3s ease;
 }
+
+.review-text.is-clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.btn-review-text-toggle {
+  background: transparent;
+  border: none;
+  color: var(--color-primary);
+  font-size: 0.83rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 2px 0 8px 0;
+  margin-bottom: 6px;
+  display: inline-block;
+  align-self: flex-start;
+  transition: var(--transition);
+}
+
+.btn-review-text-toggle:hover {
+  color: var(--color-secondary);
+  text-decoration: underline;
+}
+
 
 .review-date {
   font-size: 0.8rem;
@@ -1082,12 +1334,203 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   gap: 6px;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.review-google-date-link {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.review-google-date-link:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+/* --- Review Photos Gallery --- */
+.review-photos {
+  display: flex;
+  gap: 10px;
+  margin: 12px 0 6px;
+}
+
+.review-photo-img {
+  width: 88px;
+  height: 88px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-card-border);
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.review-photo-img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* --- Owner Response Box (Native HTML5 <details>) --- */
+.review-owner-details {
+  margin-top: 12px;
+}
+
+.review-owner-details summary {
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: var(--color-primary);
+  font-size: 0.83rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 0;
+  user-select: none;
+  transition: var(--transition);
+}
+
+.review-owner-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.review-owner-details summary:hover {
+  color: var(--color-secondary);
+}
+
+.review-owner-details summary svg {
+  transition: transform 0.25s ease;
+}
+
+.review-owner-details[open] summary svg {
+  transform: rotate(180deg);
+}
+
+.review-owner-response {
+  background-color: var(--color-primary-bg);
+  border-left: 3px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-top: 8px;
+  animation: fadeIn 0.25s ease;
+}
+
+.review-owner-response-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.review-owner-response-text {
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--color-text-main);
+  font-style: italic;
 }
 
 .google-badge-small {
   width: 14px;
   height: 14px;
 }
+
+/* --- Skeleton loader --- */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+.review-skeleton {
+  min-height: 220px;
+  background: linear-gradient(135deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+  background-size: 200% 100%;
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* --- Mobile dots --- */
+.reviews-dots {
+  display: none;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+.reviews-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-card-border);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.reviews-dot.active {
+  background: var(--color-primary);
+  transform: scale(1.3);
+}
+
+/* --- Google summary & CTA links --- */
+.reviews-google-summary {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 28px;
+  margin-bottom: 48px;
+}
+
+.reviews-google-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--color-bg-light);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-pill);
+  padding: 12px 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.reviews-google-link:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+}
+
+.reviews-write-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--color-secondary);
+  color: var(--color-white);
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--radius-pill);
+  padding: 12px 24px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: var(--transition);
+  box-shadow: 0 4px 14px rgba(6, 37, 45, 0.2);
+}
+
+.reviews-write-link:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-white);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(45, 167, 223, 0.35);
+}
+
 
 /* ==========================================================================
    3 STEP PROTECTION PROCESS SECTION
@@ -1238,7 +1681,7 @@ h1, h2, h3, h4, h5, h6 {
 .schedule-banner {
   position: relative;
   min-height: 480px;
-  background-image: url('../assets/images/What-kind-of-soap-do-professional-window-washers-use_-scaled-1.webp');
+  background-image: url('../assets/images/services/What-kind-of-soap-do-professional-window-washers-use_-scaled-1.webp');
   background-position: center;
   background-size: cover;
   display: flex;
@@ -1716,9 +2159,7 @@ h1, h2, h3, h4, h5, h6 {
   .pricing-card.featured {
     transform: none;
   }
-  .reviews-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+
   .areas-grid {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -1728,26 +2169,29 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @media (max-width: 768px) {
+  .topbar {
+    display: none;
+  }
   .nav-container {
-    height: 74px;
+    height: 70px;
   }
   .nav-logo {
-    height: 44px;
-  }
-  .topbar-left {
-    gap: 16px;
-  }
-  .topbar-badge {
-    display: none;
+    height: 42px;
   }
   .nav-menu, .nav-actions .btn-nav-quote {
     display: none;
+  }
+  .btn-nav-call-mobile {
+    display: inline-flex;
   }
   .menu-toggle {
     display: flex;
   }
   .mobile-nav {
     display: block;
+  }
+  .rating-reviews-word {
+    display: none;
   }
   .hero {
     min-height: 560px;
@@ -1817,6 +2261,11 @@ h1, h2, h3, h4, h5, h6 {
   }
   .reviews-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .reviews-dots {
+    display: flex;             /* show dots on mobile */
   }
   .areas-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -1837,19 +2286,18 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (max-width: 480px) {
   .nav-container {
-    height: 68px;
+    height: 64px;
   }
   .nav-logo {
-    height: 40px;
+    height: 36px;
   }
-  .topbar-content {
-    flex-direction: column;
-    gap: 6px;
-    text-align: center;
+  .btn-nav-call-mobile {
+    padding: 8px 14px;
+    font-size: 0.8rem;
   }
-  .topbar-left {
-    flex-direction: column;
-    gap: 4px;
+  .btn-nav-call-mobile svg {
+    width: 13px;
+    height: 13px;
   }
   .hero-title {
     font-size: 2.2rem;
