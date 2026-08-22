@@ -1,7 +1,7 @@
 /**
  * Sleek Window Cleaning - Interactive Scripts
  * Handles mobile drawer, 3D flip cards, 3-step process tab switcher,
- * reviews carousel, accordion toggles, and instant quote calculator.
+ * accordion toggles, and instant quote calculator.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -63,21 +63,21 @@ document.addEventListener('DOMContentLoaded', () => {
       step: "Step 01",
       title: "Scrub",
       desc: "We begin with a thorough pre-cleaning process, removing dirt, grime, and stubborn residue. Using professional-grade solutions and specialized scrubbing techniques, we ensure every inch of your window surface is perfectly prepared for the next step.",
-      img: "assets/images/scrubbing-window-cleaning.webp",
+      img: "assets/images/process/scrubbing-window-cleaning.webp",
       alt: "Scrubbing Window Cleaning"
     },
     squeegee: {
       step: "Step 02",
       title: "Squeegee",
       desc: "Our expert technicians employ precise squeegee techniques perfected over years of experience. With smooth, continuous strokes, we remove every drop of cleaning solution, leaving behind crystal-clear glass without streaks or water marks.",
-      img: "assets/images/window-cleaning-services-2-scaled.webp",
+      img: "assets/images/process/window-cleaning-services-2-scaled.webp",
       alt: "Squeegee Window Cleaning Technique"
     },
     detail: {
       step: "Step 03",
       title: "Detail",
       desc: "Perfection is in the details. We meticulously clean window frames, sills, and corners that others overlook. Every edge is polished and inspected, ensuring your windows look flawless from every angle and truly shine.",
-      img: "assets/images/the-sleek-difference-683x1024.webp",
+      img: "assets/images/process/the-sleek-difference-683x1024.webp",
       alt: "Detailing Window Frames and Sills"
     }
   };
@@ -138,8 +138,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function openQuoteModal(serviceName = null) {
     if (serviceName) {
+      const s = serviceName.toLowerCase();
       serviceCheckboxes.forEach(cb => {
-        if (cb.value.toLowerCase().includes(serviceName.toLowerCase())) {
+        const val = cb.value.toLowerCase();
+        let match = false;
+        if (s.includes('ext') && val === 'window_ext') match = true;
+        else if (s.includes('int') && val === 'window_int') match = true;
+        else if (s.includes('press') && val === 'pressure') match = true;
+        else if (s.includes('roof') && val === 'roof') match = true;
+        else if (s.includes('paver') && val === 'paver') match = true;
+        else if (s.includes('solar') && val === 'solar') match = true;
+        else if (s.includes('gutter') && val === 'gutter') match = true;
+
+        if (match) {
           cb.checked = true;
           cb.closest('.service-checkbox-card').classList.add('selected');
         }
@@ -184,7 +195,9 @@ document.addEventListener('DOMContentLoaded', () => {
       window_int: 80,
       pressure: 150,
       roof: 250,
-      paver: 220
+      paver: 220,
+      solar: 140,
+      gutter: 130
     };
 
     let selectedCount = 0;
@@ -235,4 +248,205 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 1000);
     });
   }
+
+  // 7. Update text on native HTML5 <details> owner response toggle
+  document.querySelectorAll('.review-owner-details').forEach(details => {
+    details.addEventListener('toggle', () => {
+      const span = details.querySelector('summary span');
+      if (span) {
+        span.textContent = details.open ? 'Hide Owner Response' : 'View Owner Response';
+      }
+    });
+  });
+
+  // 8. Read More / Show Less Toggle on Reviews
+  document.querySelectorAll('.btn-review-text-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const reviewText = btn.previousElementSibling;
+      if (reviewText && reviewText.classList.contains('review-text')) {
+        const isClamped = reviewText.classList.toggle('is-clamped');
+        btn.textContent = isClamped ? 'Read more' : 'Show less';
+        btn.setAttribute('aria-expanded', String(!isClamped));
+      }
+    });
+  });
+
+  // 9. Reviews Autoplay Looping Slider
+  const track = document.getElementById('reviewsSliderTrack');
+  const dotsContainer = document.getElementById('reviewsSliderDots');
+  const btnPrev = document.getElementById('reviewsSliderPrev');
+  const btnNext = document.getElementById('reviewsSliderNext');
+  const wrapper = document.getElementById('reviewsSliderWrapper');
+
+  if (track) {
+    let currentIndex = 0;
+    let autoplayTimer = null;
+
+    function getCards() {
+      return Array.from(track.children);
+    }
+
+    function getItemsPerPage() {
+      if (window.innerWidth <= 640) return 1;
+      if (window.innerWidth <= 1024) return 2;
+      return 3;
+    }
+
+    function getMaxIndex() {
+      const cards = getCards();
+      const itemsPerPage = getItemsPerPage();
+      return Math.max(0, cards.length - itemsPerPage);
+    }
+
+    function createDots() {
+      if (!dotsContainer) return;
+      dotsContainer.innerHTML = '';
+      const maxIndex = getMaxIndex();
+
+      for (let i = 0; i <= maxIndex; i++) {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = `reviews-slider-dot ${i === currentIndex ? 'active' : ''}`;
+        dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+        dot.addEventListener('click', () => {
+          currentIndex = i;
+          updateSlider();
+          resetAutoplay();
+        });
+        dotsContainer.appendChild(dot);
+      }
+    }
+
+    function updateSlider() {
+      const itemsPerPage = getItemsPerPage();
+      const maxIndex = getMaxIndex();
+
+      if (currentIndex > maxIndex) currentIndex = maxIndex;
+      if (currentIndex < 0) currentIndex = 0;
+
+      // Calculate shift percentage
+      const cardWidthPercent = 100 / itemsPerPage;
+      const gapOffset = 24 * (currentIndex / itemsPerPage);
+      track.style.transform = `translateX(calc(-${currentIndex * cardWidthPercent}% - ${gapOffset}px))`;
+
+      // Update dots
+      if (dotsContainer) {
+        const dots = Array.from(dotsContainer.children);
+        dots.forEach((dot, idx) => {
+          dot.classList.toggle('active', idx === currentIndex);
+        });
+      }
+    }
+
+    function nextSlide() {
+      const maxIndex = getMaxIndex();
+      if (currentIndex >= maxIndex) {
+        currentIndex = 0; // Loop back to start
+      } else {
+        currentIndex++;
+      }
+      updateSlider();
+    }
+
+    function prevSlide() {
+      const maxIndex = getMaxIndex();
+      if (currentIndex <= 0) {
+        currentIndex = maxIndex; // Loop back to end
+      } else {
+        currentIndex--;
+      }
+      updateSlider();
+    }
+
+    if (btnPrev) {
+      btnPrev.addEventListener('click', (e) => {
+        e.preventDefault();
+        prevSlide();
+        resetAutoplay();
+      });
+    }
+
+    if (btnNext) {
+      btnNext.addEventListener('click', (e) => {
+        e.preventDefault();
+        nextSlide();
+        resetAutoplay();
+      });
+    }
+
+    function startAutoplay() {
+      stopAutoplay();
+      autoplayTimer = setInterval(nextSlide, 5000);
+    }
+
+    function stopAutoplay() {
+      if (autoplayTimer) {
+        clearInterval(autoplayTimer);
+        autoplayTimer = null;
+      }
+    }
+
+    function resetAutoplay() {
+      stopAutoplay();
+      startAutoplay();
+    }
+
+    // Touch gestures for mobile swiping
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    if (wrapper) {
+      wrapper.addEventListener('mouseenter', stopAutoplay);
+      wrapper.addEventListener('mouseleave', startAutoplay);
+
+      wrapper.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        stopAutoplay();
+      }, { passive: true });
+
+      wrapper.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 40) {
+          if (diff > 0) {
+            nextSlide();
+          } else {
+            prevSlide();
+          }
+        }
+        startAutoplay();
+      }, { passive: true });
+    }
+
+    // Keyboard navigation when interacting with slider
+    document.addEventListener('keydown', (e) => {
+      if (document.activeElement && (document.activeElement.closest('.reviews-section') || document.activeElement.closest('.reviews-slider-container'))) {
+        if (e.key === 'ArrowLeft') {
+          prevSlide();
+          resetAutoplay();
+        } else if (e.key === 'ArrowRight') {
+          nextSlide();
+          resetAutoplay();
+        }
+      }
+    });
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        createDots();
+        updateSlider();
+      }, 100);
+    });
+
+    createDots();
+    updateSlider();
+    startAutoplay();
+  }
+
 });
+
+
+
+
