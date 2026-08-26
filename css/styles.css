@@ -2587,3 +2587,262 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--radius-pill);
   border: 1px solid rgba(45, 167, 223, 0.2);
 }
+
+/* ==========================================================================
+   MEGA MENU & SILO ARCHITECTURE STYLES
+   ========================================================================== */
+.dropdown-menu.mega-menu {
+  min-width: 680px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  padding: 0;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  box-shadow: 0 16px 40px rgba(6, 37, 45, 0.22);
+}
+
+.nav-item-dropdown:hover .dropdown-menu.mega-menu {
+  transform: translateX(-50%) translateY(0);
+}
+
+.mega-menu-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--color-white);
+}
+
+.mega-menu-column {
+  padding: 24px 20px;
+}
+
+.mega-menu-column:first-child {
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
+  background: var(--color-primary-bg);
+}
+
+.mega-menu-header {
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--color-primary);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--color-primary-light);
+}
+
+.mega-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mega-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--color-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.mega-menu-item:hover {
+  background-color: var(--color-white);
+  color: var(--color-primary);
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.mega-menu-column:first-child .mega-menu-item:hover {
+  background-color: #eaf6fc;
+}
+
+.badge-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.badge-tag.base {
+  background-color: #2da7df;
+  color: #ffffff;
+}
+
+.badge-tag.expansion {
+  background-color: #06252d;
+  color: #ffffff;
+}
+
+/* Mobile Mega Menu Adjustments */
+@media (max-width: 1024px) {
+  .dropdown-menu.mega-menu {
+    min-width: 100%;
+    position: static;
+    transform: none !important;
+    box-shadow: none;
+    border-radius: 0;
+  }
+  
+  .mega-menu-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .mega-menu-column:first-child {
+    border-right: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+}
+
+/* ==========================================================================
+   BREADCRUMBS & SUBPAGE HERO
+   ========================================================================== */
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.breadcrumbs a {
+  color: #bde4f5;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.breadcrumbs a:hover {
+  color: var(--color-white);
+}
+
+.breadcrumbs .separator {
+  opacity: 0.6;
+  color: #bde4f5;
+}
+
+.breadcrumbs .current {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.subpage-hero {
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary) 100%);
+  color: var(--color-white);
+  padding: 60px 0 70px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.subpage-hero-title {
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  color: var(--color-white);
+}
+
+.subpage-hero-subtitle {
+  font-size: 1.15rem;
+  line-height: 1.6;
+  max-width: 760px;
+  opacity: 0.92;
+  margin-bottom: 28px;
+}
+
+.subpage-content {
+  padding: 70px 0;
+}
+
+.silo-city-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.silo-city-card {
+  background: var(--color-white);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-decoration: none;
+  color: var(--color-secondary);
+  font-weight: 700;
+  transition: var(--transition);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.silo-city-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-primary);
+  box-shadow: 0 10px 24px rgba(45, 167, 223, 0.15);
+  color: var(--color-primary);
+}
+
+.silo-city-card svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* ==========================================================================
+   SUBPAGE FEATURE GRID WITH SERVICE IMAGES
+   ========================================================================== */
+.subpage-feature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+  align-items: center;
+  margin-bottom: 50px;
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: 30px;
+  border: 1px solid var(--color-card-border);
+  box-shadow: 0 10px 30px rgba(6, 37, 45, 0.05);
+}
+
+.subpage-feature-image {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  height: 320px;
+  width: 100%;
+}
+
+.subpage-feature-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition);
+}
+
+.subpage-feature-grid:hover .subpage-feature-image img {
+  transform: scale(1.03);
+}
+
+@media (max-width: 900px) {
+  .subpage-feature-grid {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+  .subpage-feature-image {
+    height: 240px;
+  }
+}

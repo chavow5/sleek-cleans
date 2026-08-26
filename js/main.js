@@ -168,9 +168,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   openQuoteButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
-      e.preventDefault();
       const service = btn.getAttribute('data-service');
-      openQuoteModal(service);
+      if (modalBackdrop) {
+        e.preventDefault();
+        openQuoteModal(service);
+      } else {
+        // If modal backdrop is not present on subpage, allow default link or navigate to root quote section
+        if (btn.getAttribute('href') === '#quote') {
+          e.preventDefault();
+          const depth = (window.location.pathname.split('/').length - 2);
+          let rootPrefix = '';
+          for (let i = 0; i < depth; i++) {
+            rootPrefix += '../';
+          }
+          if (!rootPrefix) rootPrefix = './';
+          window.location.href = rootPrefix + 'index.html#quote';
+        }
+      }
     });
   });
 
