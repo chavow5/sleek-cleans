@@ -140,6 +140,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const windowPaneGroup = document.getElementById('windowPaneGroup');
   const solarPanelGroup = document.getElementById('solarPanelGroup');
 
+  // Helper to safely set text content if element exists
+  function setElText(id, text) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  }
+
   function openQuoteModal(serviceName = null) {
     if (serviceName) {
       const s = serviceName.toLowerCase();
@@ -156,18 +162,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (match) {
           cb.checked = true;
-          cb.closest('.service-checkbox-card').classList.add('selected');
+          const card = cb.closest('.service-checkbox-card');
+          if (card) card.classList.add('selected');
         }
       });
     }
     updateDynamicFormGroups();
     calculateEstimate();
-    modalBackdrop.classList.add('open');
+    if (modalBackdrop) modalBackdrop.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
 
   function closeQuoteModal() {
-    modalBackdrop.classList.remove('open');
+    if (modalBackdrop) modalBackdrop.classList.remove('open');
     document.body.style.overflow = '';
   }
 
@@ -201,8 +208,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modalBackdrop.classList.contains('open')) {
-      closeQuoteModal();
+    if (e.key === 'Escape') {
+      if (modalBackdrop && modalBackdrop.classList.contains('open')) closeQuoteModal();
+      if (printableModalBackdrop && printableModalBackdrop.classList.contains('open')) closePrintableModal();
     }
   });
 
@@ -287,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
     serviceCheckboxes.forEach(cb => {
       const card = cb.closest('.service-checkbox-card');
       if (cb.checked) {
-        card.classList.add('selected');
+        if (card) card.classList.add('selected');
         selectedCount++;
 
         switch (cb.value) {
@@ -327,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
             break;
         }
       } else {
-        card.classList.remove('selected');
+        if (card) card.classList.remove('selected');
       }
     });
 
@@ -416,21 +424,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const storyVal = storyCountSelect ? storyCountSelect.value : '1.0';
     const storyMultiplier = parseFloat(storyVal) || 1.0;
 
-    // Set Customer & Meta Info
-    document.getElementById('printCustomerName').textContent = quoteName;
-    document.getElementById('printCustomerPhone').textContent = quotePhone;
-    document.getElementById('printCustomerEmail').textContent = quoteEmail;
-    document.getElementById('printCustomerAddress').textContent = quoteAddress;
+    // Set Customer & Meta Info safely
+    setElText('printCustomerName', quoteName);
+    setElText('printCustomerPhone', quotePhone);
+    setElText('printCustomerEmail', quoteEmail);
+    setElText('printCustomerAddress', quoteAddress);
 
     const randomId = Math.floor(1000 + Math.random() * 9000);
-    document.getElementById('printQuoteId').textContent = `#SLK-2026-${randomId}`;
+    setElText('printQuoteId', `#SLK-2026-${randomId}`);
 
     const now = new Date();
     const dateStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-    document.getElementById('printIssueDate').textContent = dateStr;
+    setElText('printIssueDate', dateStr);
 
-    document.getElementById('printHomeSize').textContent = getReadableHomeSize(homeSize);
-    document.getElementById('printStories').textContent = getReadableStories(storyVal);
+    setElText('printHomeSize', getReadableHomeSize(homeSize));
+    setElText('printStories', getReadableStories(storyVal));
 
     let hasExtIntWin = false;
     let hasSolar = false;
@@ -480,7 +488,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let estMaxHours = 1.0;
 
     const tbody = document.getElementById('printServicesTbody');
-    tbody.innerHTML = '';
+    if (tbody) tbody.innerHTML = '';
 
     serviceCheckboxes.forEach(cb => {
       if (cb.checked) {
@@ -579,18 +587,20 @@ document.addEventListener('DOMContentLoaded', () => {
             break;
         }
 
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><strong>${serviceTitle}</strong></td>
-          <td style="color: #64748b; font-size: 0.85rem;">${scopeDesc}</td>
-          <td style="text-align: right; font-weight: 700; color: #0284c7;">${priceStr}</td>
-        `;
-        tbody.appendChild(tr);
+        if (tbody) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><strong>${serviceTitle}</strong></td>
+            <td style="color: #64748b; font-size: 0.85rem;">${scopeDesc}</td>
+            <td style="text-align: right; font-weight: 700; color: #0284c7;">${priceStr}</td>
+          `;
+          tbody.appendChild(tr);
+        }
       }
     });
 
-    document.getElementById('printPanes').textContent = hasExtIntWin ? `Up to ${paneCount} panes` : 'N/A';
-    document.getElementById('printPanels').textContent = hasSolar ? (solarCount === '40_plus' ? '40+ panels' : `Up to ${solarCount} panels`) : 'N/A';
+    setElText('printPanes', hasExtIntWin ? `Up to ${paneCount} panes` : 'N/A');
+    setElText('printPanels', hasSolar ? (solarCount === '40_plus' ? '40+ panels' : `Up to ${solarCount} panels`) : 'N/A');
 
     // Multi-story time adjustment
     if (storyMultiplier > 1.0) {
@@ -605,20 +615,21 @@ document.addEventListener('DOMContentLoaded', () => {
     minTotal = Math.round(minTotal * bundleDiscount);
     maxTotal = Math.round(maxTotal * bundleDiscount);
 
-    // Format Estimated Duration Pill ("Tiempo")
+    // Format Estimated Duration Pill
     const roundedMin = Math.max(1, Math.round(estMinHours * 2) / 2);
     const roundedMax = Math.max(roundedMin + 0.5, Math.round(estMaxHours * 2) / 2);
-    document.getElementById('printEstimatedDuration').textContent = `${roundedMin} - ${roundedMax} Hours`;
+    setElText('printEstimatedDuration', `${roundedMin} - ${roundedMax} Hours`);
 
     // Total Amount Display
-    const totalEl = document.getElementById('printTotalAmount');
+    let totalText = '$0';
     if (hasCustomPricing) {
-      totalEl.textContent = `$${minTotal}+ (Custom)`;
+      totalText = `$${minTotal}+ (Custom)`;
     } else if (minTotal === maxTotal) {
-      totalEl.textContent = `$${minTotal}`;
+      totalText = `$${minTotal}`;
     } else {
-      totalEl.textContent = `$${minTotal} - $${maxTotal}`;
+      totalText = `$${minTotal} - $${maxTotal}`;
     }
+    setElText('printTotalAmount', totalText);
 
     closeQuoteModal();
     if (printableModalBackdrop) {
@@ -631,13 +642,17 @@ document.addEventListener('DOMContentLoaded', () => {
     quoteForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const btn = quoteForm.querySelector('button[type="submit"]');
-      const originalText = btn.innerHTML;
-      btn.innerHTML = `<span>Opening Print Estimate...</span>`;
-      btn.disabled = true;
+      const originalText = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.innerHTML = `<span>Opening Print Estimate...</span>`;
+        btn.disabled = true;
+      }
 
       setTimeout(() => {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
+        if (btn) {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }
         generatePrintableEstimate();
         // Immediately trigger print dialog
         window.print();
