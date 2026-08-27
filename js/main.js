@@ -135,6 +135,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const serviceCheckboxes = document.querySelectorAll('.service-checkbox');
   const homeSizeSelect = document.getElementById('homeSizeSelect');
   const storyCountSelect = document.getElementById('storyCountSelect');
+  const windowPaneSelect = document.getElementById('windowPaneSelect');
+  const solarPanelSelect = document.getElementById('solarPanelSelect');
+  const windowPaneGroup = document.getElementById('windowPaneGroup');
+  const solarPanelGroup = document.getElementById('solarPanelGroup');
 
   function openQuoteModal(serviceName = null) {
     if (serviceName) {
@@ -156,6 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     }
+    updateDynamicFormGroups();
     calculateEstimate();
     modalBackdrop.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -201,65 +206,442 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Calculate dynamic quote estimate
+  // Toggle visibility of specific service sub-selectors
+  function updateDynamicFormGroups() {
+    let hasWindowService = false;
+    let hasSolarService = false;
+
+    serviceCheckboxes.forEach(cb => {
+      if (cb.checked) {
+        if (cb.value === 'window_ext' || cb.value === 'window_int') hasWindowService = true;
+        if (cb.value === 'solar') hasSolarService = true;
+      }
+    });
+
+    if (windowPaneGroup) {
+      windowPaneGroup.style.display = hasWindowService ? 'block' : 'none';
+    }
+    if (solarPanelGroup) {
+      solarPanelGroup.style.display = hasSolarService ? 'block' : 'none';
+    }
+  }
+
+  // Calculate dynamic quote estimate using client's exact pricing tables
   function calculateEstimate() {
-    let base = 0;
-    const baseRates = {
-      window_ext: 120,
-      window_int: 80,
-      pressure: 150,
-      roof: 250,
-      paver: 220,
-      solar: 140,
-      gutter: 130
+    updateDynamicFormGroups();
+
+    let minTotal = 0;
+    let maxTotal = 0;
+    let hasCustomPricing = false;
+    let selectedCount = 0;
+
+    const paneCount = parseInt(windowPaneSelect ? windowPaneSelect.value : '25', 10) || 25;
+    const solarCount = solarPanelSelect ? solarPanelSelect.value : '10';
+    const homeSize = homeSizeSelect ? homeSizeSelect.value : '1500_2500';
+    const storyMultiplier = parseFloat(storyCountSelect ? storyCountSelect.value : '1.0') || 1.0;
+
+    // 1. Exterior Windows Price Table
+    const extWindowRates = { 25: 199, 40: 295, 60: 375, 80: 440, 100: 499 };
+    // 2. Interior Windows Price Table
+    const intWindowRates = { 25: 75, 40: 99, 60: 149, 80: 199, 100: 249 };
+
+    // 3. Roof Soft Wash (No stories baseline)
+    const roofRates = {
+      'under_1000': { min: 500, max: 500 },
+      '1500_2500': { min: 500, max: 700 },
+      '2500_3500': { min: 700, max: 999 },
+      '3500_4500': { min: 999, max: 1400 },
+      '5000_plus': { min: 1400, max: 1800 }
     };
 
-    let selectedCount = 0;
+    // 4. Paver Sealing (No stories baseline)
+    const paverRates = {
+      'under_1000': { min: 1099, max: 1099 },
+      '1500_2500': { min: 1650, max: 2750 },
+      '2500_3500': { min: 2750, max: 3850 },
+      '3500_4500': { min: 3850, max: 4950 },
+      '5000_plus': { custom: true }
+    };
+
+    // 5. Pressure Washing (No stories baseline)
+    const pressureRates = {
+      'under_1000': { min: 175, max: 275 },
+      '1500_2500': { min: 375, max: 499 },
+      '2500_3500': { min: 499, max: 699 },
+      '3500_4500': { min: 699, max: 899 },
+      '5000_plus': { custom: true }
+    };
+
+    // 6. Solar Panel Cleaning
+    const solarRates = {
+      '10': { min: 179, max: 179 },
+      '20': { min: 179, max: 349 },
+      '30': { min: 349, max: 480 },
+      '40': { min: 480, max: 599 },
+      '40_plus': { custom: true }
+    };
+
+    // 7. Gutter Cleaning
+    const gutterBase = 149;
+
     serviceCheckboxes.forEach(cb => {
       const card = cb.closest('.service-checkbox-card');
       if (cb.checked) {
         card.classList.add('selected');
-        base += (baseRates[cb.value] || 100);
         selectedCount++;
+
+        switch (cb.value) {
+          case 'window_ext':
+            const extP = extWindowRates[paneCount] || 199;
+            minTotal += extP;
+            maxTotal += extP;
+            break;
+          case 'window_int':
+            const intP = intWindowRates[paneCount] || 75;
+            minTotal += intP;
+            maxTotal += intP;
+            break;
+          case 'roof':
+            const r = roofRates[homeSize] || { min: 500, max: 700 };
+            minTotal += r.min;
+            maxTotal += r.max;
+            break;
+          case 'paver':
+            const pv = paverRates[homeSize] || { min: 1650, max: 2750 };
+            if (pv.custom) hasCustomPricing = true;
+            else { minTotal += pv.min; maxTotal += pv.max; }
+            break;
+          case 'pressure':
+            const pr = pressureRates[homeSize] || { min: 375, max: 499 };
+            if (pr.custom) hasCustomPricing = true;
+            else { minTotal += pr.min; maxTotal += pr.max; }
+            break;
+          case 'solar':
+            const sl = solarRates[solarCount] || { min: 179, max: 179 };
+            if (sl.custom) hasCustomPricing = true;
+            else { minTotal += sl.min; maxTotal += sl.max; }
+            break;
+          case 'gutter':
+            minTotal += gutterBase;
+            maxTotal += gutterBase;
+            break;
+        }
       } else {
         card.classList.remove('selected');
       }
     });
 
     if (selectedCount === 0) {
-      estimatePriceEl.textContent = '$0';
+      if (estimatePriceEl) estimatePriceEl.textContent = '$0';
       return;
     }
 
-    const sizeMultiplier = parseFloat(homeSizeSelect ? homeSizeSelect.value : 1.0) || 1.0;
-    const storyMultiplier = parseFloat(storyCountSelect ? storyCountSelect.value : 1.0) || 1.0;
+    // Apply story multiplier adjustment for multi-story buildings
+    if (storyMultiplier > 1.0) {
+      minTotal = Math.round(minTotal * (1 + (storyMultiplier - 1) * 0.25));
+      maxTotal = Math.round(maxTotal * storyMultiplier);
+    }
 
-    // Bundle discount if 2 or more services
-    const discount = selectedCount >= 3 ? 0.8 : (selectedCount === 2 ? 0.9 : 1.0);
-    const total = Math.round(base * sizeMultiplier * storyMultiplier * discount);
+    // Apply bundle discount if 2 or more services selected
+    const bundleDiscount = selectedCount >= 3 ? 0.85 : (selectedCount === 2 ? 0.90 : 1.0);
+    minTotal = Math.round(minTotal * bundleDiscount);
+    maxTotal = Math.round(maxTotal * bundleDiscount);
 
-    estimatePriceEl.textContent = `$${total} - $${Math.round(total * 1.25)}`;
+    if (estimatePriceEl) {
+      if (hasCustomPricing) {
+        estimatePriceEl.textContent = `$${minTotal}+ (Custom Pricing Required)`;
+      } else if (minTotal === maxTotal) {
+        estimatePriceEl.textContent = `$${minTotal}`;
+      } else {
+        estimatePriceEl.textContent = `$${minTotal} - $${maxTotal}`;
+      }
+    }
   }
 
   serviceCheckboxes.forEach(cb => cb.addEventListener('change', calculateEstimate));
   if (homeSizeSelect) homeSizeSelect.addEventListener('change', calculateEstimate);
   if (storyCountSelect) storyCountSelect.addEventListener('change', calculateEstimate);
+  if (windowPaneSelect) windowPaneSelect.addEventListener('change', calculateEstimate);
+  if (solarPanelSelect) solarPanelSelect.addEventListener('change', calculateEstimate);
+
+  const printableModalBackdrop = document.getElementById('printableEstimateModalBackdrop');
+  const closePrintableModalBtn = document.getElementById('closePrintableModal');
+  const triggerPrintBtn = document.getElementById('triggerPrintBtn');
+
+  function closePrintableModal() {
+    if (printableModalBackdrop) {
+      printableModalBackdrop.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  }
+
+  if (closePrintableModalBtn) closePrintableModalBtn.addEventListener('click', closePrintableModal);
+  if (triggerPrintBtn) {
+    triggerPrintBtn.addEventListener('click', () => {
+      window.print();
+    });
+  }
+  if (printableModalBackdrop) {
+    printableModalBackdrop.addEventListener('click', (e) => {
+      if (e.target === printableModalBackdrop) closePrintableModal();
+    });
+  }
+
+  function getReadableHomeSize(val) {
+    const map = {
+      'under_1000': 'Under 1,000 sq ft',
+      '1500_2500': '1,500 - 2,500 sq ft',
+      '2500_3500': '2,500 - 3,500 sq ft',
+      '3500_4500': '3,500 - 4,500 sq ft',
+      '5000_plus': '5,000+ sq ft'
+    };
+    return map[val] || 'Standard';
+  }
+
+  function getReadableStories(val) {
+    if (val === '1.25') return '2 Stories';
+    if (val === '1.5') return '3 Stories';
+    return '1 Story';
+  }
+
+  function generatePrintableEstimate() {
+    const quoteName = document.getElementById('quoteName')?.value || 'Valued Customer';
+    const quotePhone = document.getElementById('quotePhone')?.value || 'Not provided';
+    const quoteEmail = document.getElementById('quoteEmail')?.value || 'Not provided';
+    const quoteAddress = document.getElementById('quoteAddress')?.value || 'Tampa Bay Area, FL';
+
+    const paneCount = parseInt(windowPaneSelect ? windowPaneSelect.value : '25', 10) || 25;
+    const solarCount = solarPanelSelect ? solarPanelSelect.value : '10';
+    const homeSize = homeSizeSelect ? homeSizeSelect.value : '1500_2500';
+    const storyVal = storyCountSelect ? storyCountSelect.value : '1.0';
+    const storyMultiplier = parseFloat(storyVal) || 1.0;
+
+    // Set Customer & Meta Info
+    document.getElementById('printCustomerName').textContent = quoteName;
+    document.getElementById('printCustomerPhone').textContent = quotePhone;
+    document.getElementById('printCustomerEmail').textContent = quoteEmail;
+    document.getElementById('printCustomerAddress').textContent = quoteAddress;
+
+    const randomId = Math.floor(1000 + Math.random() * 9000);
+    document.getElementById('printQuoteId').textContent = `#SLK-2026-${randomId}`;
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    document.getElementById('printIssueDate').textContent = dateStr;
+
+    document.getElementById('printHomeSize').textContent = getReadableHomeSize(homeSize);
+    document.getElementById('printStories').textContent = getReadableStories(storyVal);
+
+    let hasExtIntWin = false;
+    let hasSolar = false;
+
+    // Rate tables for itemized listing
+    const extWindowRates = { 25: 199, 40: 295, 60: 375, 80: 440, 100: 499 };
+    const intWindowRates = { 25: 75, 40: 99, 60: 149, 80: 199, 100: 249 };
+
+    const roofRates = {
+      'under_1000': { min: 500, max: 500 },
+      '1500_2500': { min: 500, max: 700 },
+      '2500_3500': { min: 700, max: 999 },
+      '3500_4500': { min: 999, max: 1400 },
+      '5000_plus': { min: 1400, max: 1800 }
+    };
+
+    const paverRates = {
+      'under_1000': { min: 1099, max: 1099 },
+      '1500_2500': { min: 1650, max: 2750 },
+      '2500_3500': { min: 2750, max: 3850 },
+      '3500_4500': { min: 3850, max: 4950 },
+      '5000_plus': { custom: true }
+    };
+
+    const pressureRates = {
+      'under_1000': { min: 175, max: 275 },
+      '1500_2500': { min: 375, max: 499 },
+      '2500_3500': { min: 499, max: 699 },
+      '3500_4500': { min: 699, max: 899 },
+      '5000_plus': { custom: true }
+    };
+
+    const solarRates = {
+      '10': { min: 179, max: 179 },
+      '20': { min: 179, max: 349 },
+      '30': { min: 349, max: 480 },
+      '40': { min: 480, max: 599 },
+      '40_plus': { custom: true }
+    };
+
+    let minTotal = 0;
+    let maxTotal = 0;
+    let hasCustomPricing = false;
+    let selectedCount = 0;
+
+    let estMinHours = 0.5;
+    let estMaxHours = 1.0;
+
+    const tbody = document.getElementById('printServicesTbody');
+    tbody.innerHTML = '';
+
+    serviceCheckboxes.forEach(cb => {
+      if (cb.checked) {
+        selectedCount++;
+        let serviceTitle = '';
+        let scopeDesc = '';
+        let priceStr = '';
+
+        switch (cb.value) {
+          case 'window_ext':
+            hasExtIntWin = true;
+            serviceTitle = 'Exterior Window Cleaning';
+            scopeDesc = `Pure-water streak-free exterior wash up to ${paneCount} panes`;
+            const extP = extWindowRates[paneCount] || 199;
+            priceStr = `$${extP}`;
+            minTotal += extP;
+            maxTotal += extP;
+            estMinHours += (paneCount / 40);
+            estMaxHours += (paneCount / 25);
+            break;
+          case 'window_int':
+            hasExtIntWin = true;
+            serviceTitle = 'Interior Window Cleaning';
+            scopeDesc = `Hand-scrubbed & detailed interior glass up to ${paneCount} panes`;
+            const intP = intWindowRates[paneCount] || 75;
+            priceStr = `$${intP}`;
+            minTotal += intP;
+            maxTotal += intP;
+            estMinHours += 0.5;
+            estMaxHours += 1.0;
+            break;
+          case 'roof':
+            serviceTitle = 'Roof Soft Wash';
+            scopeDesc = `Low-pressure chemical treatment removing moss & dark algae (${getReadableHomeSize(homeSize)})`;
+            const r = roofRates[homeSize] || { min: 500, max: 700 };
+            priceStr = r.min === r.max ? `$${r.min}` : `$${r.min} - $${r.max}`;
+            minTotal += r.min;
+            maxTotal += r.max;
+            estMinHours += 1.5;
+            estMaxHours += 2.5;
+            break;
+          case 'paver':
+            serviceTitle = 'Paver Sealing';
+            scopeDesc = `Deep clean, joint sand lock & premium sealant application (${getReadableHomeSize(homeSize)})`;
+            const pv = paverRates[homeSize] || { min: 1650, max: 2750 };
+            if (pv.custom) {
+              priceStr = 'Custom Pricing';
+              hasCustomPricing = true;
+            } else {
+              priceStr = `$${pv.min} - $${pv.max}`;
+              minTotal += pv.min;
+              maxTotal += pv.max;
+            }
+            estMinHours += 2.0;
+            estMaxHours += 4.0;
+            break;
+          case 'pressure':
+            serviceTitle = 'Pressure Washing';
+            scopeDesc = `Commercial rotary surface wash for driveways, pool decks & walkways (${getReadableHomeSize(homeSize)})`;
+            const pr = pressureRates[homeSize] || { min: 375, max: 499 };
+            if (pr.custom) {
+              priceStr = 'Custom Pricing';
+              hasCustomPricing = true;
+            } else {
+              priceStr = `$${pr.min} - $${pr.max}`;
+              minTotal += pr.min;
+              maxTotal += pr.max;
+            }
+            estMinHours += 1.0;
+            estMaxHours += 2.0;
+            break;
+          case 'solar':
+            hasSolar = true;
+            serviceTitle = 'Solar Panel Cleaning';
+            scopeDesc = `Deionized water solar array efficiency wash (${solarCount === '40_plus' ? '40+ panels' : 'Up to ' + solarCount + ' panels'})`;
+            const sl = solarRates[solarCount] || { min: 179, max: 179 };
+            if (sl.custom) {
+              priceStr = 'Custom Pricing';
+              hasCustomPricing = true;
+            } else {
+              priceStr = sl.min === sl.max ? `$${sl.min}` : `$${sl.min} - $${sl.max}`;
+              minTotal += sl.min;
+              maxTotal += sl.max;
+            }
+            estMinHours += 0.5;
+            estMaxHours += 1.2;
+            break;
+          case 'gutter':
+            serviceTitle = 'Gutter Cleaning';
+            scopeDesc = 'Complete debris removal, downspout flush & flow check';
+            priceStr = 'Starting at $149';
+            minTotal += 149;
+            maxTotal += 149;
+            estMinHours += 0.75;
+            estMaxHours += 1.25;
+            break;
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${serviceTitle}</strong></td>
+          <td style="color: #64748b; font-size: 0.85rem;">${scopeDesc}</td>
+          <td style="text-align: right; font-weight: 700; color: #0284c7;">${priceStr}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+    });
+
+    document.getElementById('printPanes').textContent = hasExtIntWin ? `Up to ${paneCount} panes` : 'N/A';
+    document.getElementById('printPanels').textContent = hasSolar ? (solarCount === '40_plus' ? '40+ panels' : `Up to ${solarCount} panels`) : 'N/A';
+
+    // Multi-story time adjustment
+    if (storyMultiplier > 1.0) {
+      estMinHours += (storyMultiplier - 1.0) * 0.75;
+      estMaxHours += (storyMultiplier - 1.0) * 1.25;
+      minTotal = Math.round(minTotal * (1 + (storyMultiplier - 1) * 0.25));
+      maxTotal = Math.round(maxTotal * storyMultiplier);
+    }
+
+    // Bundle discount adjustment
+    const bundleDiscount = selectedCount >= 3 ? 0.85 : (selectedCount === 2 ? 0.90 : 1.0);
+    minTotal = Math.round(minTotal * bundleDiscount);
+    maxTotal = Math.round(maxTotal * bundleDiscount);
+
+    // Format Estimated Duration Pill ("Tiempo")
+    const roundedMin = Math.max(1, Math.round(estMinHours * 2) / 2);
+    const roundedMax = Math.max(roundedMin + 0.5, Math.round(estMaxHours * 2) / 2);
+    document.getElementById('printEstimatedDuration').textContent = `${roundedMin} - ${roundedMax} Hours`;
+
+    // Total Amount Display
+    const totalEl = document.getElementById('printTotalAmount');
+    if (hasCustomPricing) {
+      totalEl.textContent = `$${minTotal}+ (Custom)`;
+    } else if (minTotal === maxTotal) {
+      totalEl.textContent = `$${minTotal}`;
+    } else {
+      totalEl.textContent = `$${minTotal} - $${maxTotal}`;
+    }
+
+    closeQuoteModal();
+    if (printableModalBackdrop) {
+      printableModalBackdrop.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+  }
 
   if (quoteForm) {
     quoteForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const btn = quoteForm.querySelector('button[type="submit"]');
       const originalText = btn.innerHTML;
-      btn.innerHTML = `<span>Submitting...</span>`;
+      btn.innerHTML = `<span>Opening Print Estimate...</span>`;
       btn.disabled = true;
 
       setTimeout(() => {
-        alert('Thank you! Your quote request has been received. Our team will contact you within 15 minutes.');
         btn.innerHTML = originalText;
         btn.disabled = false;
-        quoteForm.reset();
-        closeQuoteModal();
-      }, 1000);
+        generatePrintableEstimate();
+        // Immediately trigger print dialog
+        window.print();
+      }, 300);
     });
   }
 
