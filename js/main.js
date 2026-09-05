@@ -412,6 +412,24 @@ document.addEventListener('DOMContentLoaded', () => {
     return '1 Story';
   }
 
+  // 6.1 Conditional Email Field Handling
+
+  const sendEmailCopyCheckbox = document.getElementById('sendEmailCopy');
+  const quoteEmailInput = document.getElementById('quoteEmail');
+  const emailRequiredAsterisk = document.getElementById('emailRequiredAsterisk');
+
+  if (sendEmailCopyCheckbox && quoteEmailInput) {
+    sendEmailCopyCheckbox.addEventListener('change', () => {
+      if (sendEmailCopyCheckbox.checked) {
+        quoteEmailInput.required = true;
+        if (emailRequiredAsterisk) emailRequiredAsterisk.style.display = 'inline';
+      } else {
+        quoteEmailInput.required = false;
+        if (emailRequiredAsterisk) emailRequiredAsterisk.style.display = 'none';
+      }
+    });
+  }
+
   function generatePrintableEstimate() {
     const quoteName = document.getElementById('quoteName')?.value || 'Valued Customer';
     const quotePhone = document.getElementById('quotePhone')?.value || 'Not provided';
@@ -489,6 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const tbody = document.getElementById('printServicesTbody');
     if (tbody) tbody.innerHTML = '';
+    const servicesList = [];
 
     serviceCheckboxes.forEach(cb => {
       if (cb.checked) {
@@ -587,6 +606,12 @@ document.addEventListener('DOMContentLoaded', () => {
             break;
         }
 
+        servicesList.push({
+          title: serviceTitle,
+          scope: scopeDesc,
+          price: priceStr
+        });
+
         if (tbody) {
           const tr = document.createElement('tr');
           tr.innerHTML = `
@@ -631,32 +656,156 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     setElText('printTotalAmount', totalText);
 
-    closeQuoteModal();
-    if (printableModalBackdrop) {
-      printableModalBackdrop.classList.add('open');
-      document.body.style.overflow = 'hidden';
+    return {
+      quoteId: `#SLK-2026-${randomId}`,
+      issueDate: dateStr,
+      customerName: quoteName,
+      customerPhone: quotePhone,
+      customerEmail: quoteEmail,
+      customerAddress: quoteAddress,
+      homeSize: getReadableHomeSize(homeSize),
+      stories: getReadableStories(storyVal),
+      panes: hasExtIntWin ? `Up to ${paneCount} panes` : 'N/A',
+      panels: hasSolar ? (solarCount === '40_plus' ? '40+ panels' : `Up to ${solarCount} panels`) : 'N/A',
+      services: servicesList,
+      servicesText: servicesList.map(s => `• ${s.title} (${s.scope}): ${s.price}`).join('\n'),
+      duration: `${roundedMin} - ${roundedMax} Hours`,
+      totalAmount: totalText
+    };
+  }
+
+  // 6.2 Client-side PDF Generation via html2pdf.js
+  async function generatePdfBase64(quoteId) {
+    if (typeof html2pdf === 'undefined') {
+      console.warn('html2pdf library is not loaded.');
+      return null;
+    }
+    const element = document.getElementById('printableEstimateSheet');
+    if (!element) return null;
+
+    try {
+      const opt = {
+        margin: [8, 8, 8, 8],
+        filename: `Estimate_${quoteId.replace('#', '')}.pdf`,
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: 1.8, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      const pdfDataUri = await html2pdf().set(opt).from(element).outputPdf('datauristring');
+      if (pdfDataUri && pdfDataUri.includes('base64,')) {
+        return pdfDataUri.split('base64,')[1];
+      }
+      return null;
+    } catch (err) {
+      console.warn('PDF generation encountered an issue:', err);
+      return null;
+    }
+  }
+
+  // 6.3 Send Estimate & PDF via Vercel Serverless Function (/api/send-estimate)
+  async function sendEstimateEmail(quoteData, pdfBase64) {
+    try {
+      const response = await fetch('/api/send-estimate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...quoteData,
+          pdfBase64: pdfBase64 || null
+        })
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.info('Endpoint /api/send-estimate not found. (Running locally without Vercel backend. Live emails will send when deployed to Vercel)');
+          return { success: false, reason: 'local_environment' };
+        }
+        return { success: false, reason: 'http_error', status: response.status };
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      console.warn('Could not connect to /api/send-estimate:', err);
+      return { success: false, reason: 'network_error', error: err };
     }
   }
 
   if (quoteForm) {
-    quoteForm.addEventListener('submit', (e) => {
+    quoteForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+
       const btn = quoteForm.querySelector('button[type="submit"]');
-      const originalText = btn ? btn.innerHTML : '';
+      const originalBtnHTML = btn ? btn.innerHTML : '';
+      const shouldSendEmail = sendEmailCopyCheckbox ? sendEmailCopyCheckbox.checked : false;
+      const customerEmail = quoteEmailInput ? quoteEmailInput.value.trim() : '';
+
       if (btn) {
-        btn.innerHTML = `<span>Opening Print Estimate...</span>`;
+        btn.innerHTML = shouldSendEmail
+          ? `<span>Generating PDF &amp; Sending Estimate...</span>`
+          : `<span>Preparing Estimate Sheet...</span>`;
         btn.disabled = true;
       }
 
-      setTimeout(() => {
-        if (btn) {
-          btn.innerHTML = originalText;
-          btn.disabled = false;
+      // 1. Generate estimate data & render printable sheet DOM
+      const quoteData = generatePrintableEstimate();
+
+      const alertBox = document.getElementById('estimateEmailAlert');
+      const alertText = document.getElementById('estimateEmailAlertText');
+      const subtext = document.getElementById('printModalSubtext');
+
+      if (shouldSendEmail && customerEmail) {
+        // 2. Generate PDF Base64
+        const pdfBase64 = await generatePdfBase64(quoteData.quoteId);
+
+        // 3. Send email with PDF attached via Vercel serverless function
+        const sendResult = await sendEstimateEmail(quoteData, pdfBase64);
+
+        if (alertBox && alertText) {
+          alertBox.style.display = 'flex';
+          if (sendResult.success) {
+            alertBox.style.backgroundColor = '#ecfdf5';
+            alertBox.style.borderBottomColor = '#a7f3d0';
+            alertBox.style.color = '#065f46';
+            alertText.textContent = `A copy of this estimate and your PDF have been sent to ${customerEmail}.`;
+            if (subtext) subtext.textContent = `A copy was sent to ${customerEmail}. You can also print or save as PDF below.`;
+          } else if (sendResult.reason === 'not_configured') {
+            alertBox.style.backgroundColor = '#fef3c7';
+            alertBox.style.borderBottomColor = '#fde68a';
+            alertBox.style.color = '#92400e';
+            alertText.textContent = `Estimate & PDF ready! Note: Set RESEND_API_KEY in Vercel to activate automated emailing.`;
+            if (subtext) subtext.textContent = `You can print or save this estimate summary as a PDF.`;
+          } else if (sendResult.reason === 'local_environment') {
+            alertBox.style.backgroundColor = '#f0fdf4';
+            alertBox.style.borderBottomColor = '#bbf7d0';
+            alertBox.style.color = '#166534';
+            alertText.textContent = `Estimate & PDF generated! (Deploy to Vercel to test live automated email sending)`;
+            if (subtext) subtext.textContent = `You can print or save this estimate summary as a PDF.`;
+          } else {
+            alertBox.style.backgroundColor = '#fef2f2';
+            alertBox.style.borderBottomColor = '#fecaca';
+            alertBox.style.color = '#991b1b';
+            alertText.textContent = `Estimate ready! We couldn't send the email copy right now, but your estimate summary is ready below.`;
+            if (subtext) subtext.textContent = `You can print or save this estimate summary as a PDF.`;
+          }
         }
-        generatePrintableEstimate();
-        // Immediately trigger print dialog
-        window.print();
-      }, 300);
+      } else {
+        if (alertBox) alertBox.style.display = 'none';
+        if (subtext) subtext.textContent = `You can print or save this estimate summary as a PDF.`;
+      }
+
+      if (btn) {
+        btn.innerHTML = originalBtnHTML;
+        btn.disabled = false;
+      }
+
+      closeQuoteModal();
+      if (printableModalBackdrop) {
+        printableModalBackdrop.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
     });
   }
 

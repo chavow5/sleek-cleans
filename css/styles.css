@@ -1959,6 +1959,13 @@ h1, h2, h3, h4, h5, h6 {
 
 .footer-bottom a {
   color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: var(--transition);
+}
+
+.footer-bottom a:hover {
+  color: var(--color-white);
 }
 
 /* ==========================================================================
@@ -2947,7 +2954,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ==========================================================================
-   OFFICIAL PRINTABLE ESTIMATE SHEET & WATERMARKS
+   PRINTABLE ESTIMATE SHEET & WATERMARKS
    ========================================================================== */
 .printable-modal-card {
   background-color: #ffffff;
@@ -3020,10 +3027,27 @@ h1, h2, h3, h4, h5, h6 {
   z-index: 2;
 }
 
+.estimate-logo-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.estimate-logo-container {
+  display: inline-flex;
+  align-items: center;
+  background: #ffffff;
+  padding: 6px 14px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  margin-bottom: 8px;
+}
+
 .estimate-logo {
-  height: 54px;
+  height: 50px;
   width: auto;
-  margin-bottom: 6px;
+  display: block;
 }
 
 .estimate-tagline {
