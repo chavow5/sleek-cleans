@@ -375,6 +375,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const printableModalBackdrop = document.getElementById('printableEstimateModalBackdrop');
   const closePrintableModalBtn = document.getElementById('closePrintableModal');
   const triggerPrintBtn = document.getElementById('triggerPrintBtn');
+  const triggerDownloadPdfBtn = document.getElementById('triggerDownloadPdfBtn');
+  const sendWhatsAppBtn = document.getElementById('sendWhatsAppBtn');
+  let latestQuoteData = null;
 
   function closePrintableModal() {
     if (printableModalBackdrop) {
@@ -392,6 +395,96 @@ document.addEventListener('DOMContentLoaded', () => {
   if (printableModalBackdrop) {
     printableModalBackdrop.addEventListener('click', (e) => {
       if (e.target === printableModalBackdrop) closePrintableModal();
+    });
+  }
+
+  async function downloadEstimatePdf(quoteId) {
+    const element = document.getElementById('printableEstimateSheet');
+    if (!element) {
+      window.print();
+      return;
+    }
+    const cleanId = (quoteId || 'Estimate').replace(/[^a-zA-Z0-9_-]/g, '');
+    if (typeof html2pdf !== 'undefined') {
+      const opt = {
+        margin: [8, 8, 8, 8],
+        filename: `Sleek_Clean_Estimate_${cleanId}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 1.8, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      await html2pdf().set(opt).from(element).save();
+    } else {
+      window.print();
+    }
+  }
+
+  function buildWhatsAppMessage(q) {
+    if (!q) return 'Hello! I would like to request an estimate with Sleek Clean.';
+    let msg = `✨ *NEW ESTIMATE REQUEST - SLEEK CLEAN™*\n\n`;
+    msg += `📋 *Quote ID:* ${q.quoteId}\n`;
+    msg += `📅 *Date:* ${q.issueDate}\n\n`;
+    msg += `👤 *Customer Details:*\n`;
+    msg += `• *Name:* ${q.customerName}\n`;
+    msg += `• *Phone:* ${q.customerPhone}\n`;
+    if (q.customerEmail && q.customerEmail !== 'Not provided') {
+      msg += `• *Email:* ${q.customerEmail}\n`;
+    }
+    msg += `• *Service Address:* ${q.customerAddress}\n\n`;
+    msg += `🏡 *Property Specifications:*\n`;
+    msg += `• *Home Size:* ${q.homeSize}\n`;
+    msg += `• *Stories:* ${q.stories}\n`;
+    if (q.panes && q.panes !== 'N/A') msg += `• *Window Panes:* ${q.panes}\n`;
+    if (q.panels && q.panels !== 'N/A') msg += `• *Solar Panels:* ${q.panels}\n`;
+    msg += `\n🛠️ *Selected Services:*\n`;
+    if (Array.isArray(q.services) && q.services.length > 0) {
+      q.services.forEach(s => {
+        msg += `• *${s.title}:* ${s.price} (${s.scope})\n`;
+      });
+    } else if (q.servicesText) {
+      msg += `${q.servicesText}\n`;
+    }
+    msg += `\n💰 *Total Estimated Investment:* ${q.totalAmount}\n`;
+    msg += `⏱️ *Estimated Duration:* ${q.duration}\n\n`;
+    msg += `📄 *PDF Estimate:* Prepared and downloaded.\n\n`;
+    msg += `Hello Sleek Clean! I just generated this estimate on your website and would like to confirm and schedule my service.`;
+    return msg;
+  }
+
+  if (triggerDownloadPdfBtn) {
+    triggerDownloadPdfBtn.addEventListener('click', async () => {
+      const origHtml = triggerDownloadPdfBtn.innerHTML;
+      triggerDownloadPdfBtn.innerHTML = `<span>Downloading...</span>`;
+      triggerDownloadPdfBtn.disabled = true;
+      try {
+        if (!latestQuoteData && typeof generatePrintableEstimate === 'function') {
+          latestQuoteData = generatePrintableEstimate();
+        }
+        await downloadEstimatePdf(latestQuoteData?.quoteId);
+      } finally {
+        triggerDownloadPdfBtn.innerHTML = origHtml;
+        triggerDownloadPdfBtn.disabled = false;
+      }
+    });
+  }
+
+  if (sendWhatsAppBtn) {
+    sendWhatsAppBtn.addEventListener('click', async () => {
+      const origHtml = sendWhatsAppBtn.innerHTML;
+      sendWhatsAppBtn.innerHTML = `<span>Opening WhatsApp...</span>`;
+      sendWhatsAppBtn.disabled = true;
+      try {
+        if (!latestQuoteData && typeof generatePrintableEstimate === 'function') {
+          latestQuoteData = generatePrintableEstimate();
+        }
+        await downloadEstimatePdf(latestQuoteData?.quoteId);
+        const msg = buildWhatsAppMessage(latestQuoteData);
+        const whatsappUrl = `https://api.whatsapp.com/send?phone=17272699002&text=${encodeURIComponent(msg)}`;
+        window.open(whatsappUrl, '_blank');
+      } finally {
+        sendWhatsAppBtn.innerHTML = origHtml;
+        sendWhatsAppBtn.disabled = false;
+      }
     });
   }
 
@@ -656,7 +749,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     setElText('printTotalAmount', totalText);
 
-    return {
+    latestQuoteData = {
       quoteId: `#SLK-2026-${randomId}`,
       issueDate: dateStr,
       customerName: quoteName,
@@ -672,6 +765,8 @@ document.addEventListener('DOMContentLoaded', () => {
       duration: `${roundedMin} - ${roundedMax} Hours`,
       totalAmount: totalText
     };
+
+    return latestQuoteData;
   }
 
   // 6.2 Client-side PDF Generation via html2pdf.js
@@ -718,8 +813,9 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       if (!response.ok) {
-        if (response.status === 404) {
-          console.info('Endpoint /api/send-estimate not found. (Running locally without Vercel backend. Live emails will send when deployed to Vercel)');
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+        if (isLocal && (response.status === 404 || response.status === 405)) {
+          console.info('Running on a local static server (Live Server cannot execute serverless POST functions). Deploy to Vercel to test live emails.');
           return { success: false, reason: 'local_environment' };
         }
         return { success: false, reason: 'http_error', status: response.status };

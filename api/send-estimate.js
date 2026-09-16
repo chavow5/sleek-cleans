@@ -4,6 +4,20 @@
  */
 
 export default async function handler(req, res) {
+  // CORS configuration
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+
+  // Handle preflight OPTIONS request
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   // Only allow POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
@@ -28,7 +42,10 @@ export default async function handler(req, res) {
   } = req.body || {};
 
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
-  const OWNER_EMAIL = process.env.OWNER_EMAIL || 'info@sleekcleans.com';
+  const ownerEmails = (process.env.OWNER_EMAIL || 'rlsolutionsfl@hotmail.com')
+    .split(',')
+    .map(e => e.trim())
+    .filter(Boolean);
   // Resend allows 'onboarding@resend.dev' for free testing before verifying custom domain
   const FROM_EMAIL = process.env.FROM_EMAIL || 'Sleek Window Cleaning <onboarding@resend.dev>';
 
@@ -213,7 +230,7 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           from: FROM_EMAIL,
-          to: [OWNER_EMAIL],
+          to: ownerEmails,
           subject: `🔥 New Estimate Lead: ${customerName} (${totalAmount}) - ${quoteId}`,
           html: ownerHtml,
           attachments: attachments.length > 0 ? attachments : undefined
@@ -233,7 +250,7 @@ export default async function handler(req, res) {
           body: JSON.stringify({
             from: FROM_EMAIL,
             to: [customerEmail],
-            reply_to: OWNER_EMAIL,
+            reply_to: ownerEmails[0] || 'rlsolutionsfl@hotmail.com',
             subject: `Your Instant Estimate Summary - Sleek Window Cleaning (${quoteId})`,
             html: customerHtml,
             attachments: attachments.length > 0 ? attachments : undefined
