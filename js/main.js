@@ -1101,6 +1101,358 @@ document.addEventListener('DOMContentLoaded', () => {
     startAutoplay();
   }
 
+  // ==========================================================================
+  // 9. CHRISTMAS LIGHT INSTALLATION & HOLIDAY QUOTE SYSTEM
+  // ==========================================================================
+
+  // 9.1 Real-Time Countdown Timer to December 1st
+  function initHolidayCountdown() {
+    const daysEl = document.getElementById('holidayDays');
+    const hoursEl = document.getElementById('holidayHours');
+    const minutesEl = document.getElementById('holidayMinutes');
+    const secondsEl = document.getElementById('holidaySeconds');
+
+    if (!daysEl || !hoursEl || !minutesEl || !secondsEl) return;
+
+    function updateTimer() {
+      const now = new Date();
+      let targetYear = now.getFullYear();
+      // Target is December 1st, 23:59:59
+      let targetDate = new Date(targetYear, 11, 1, 23, 59, 59);
+
+      // If current date has passed Dec 1st, count down to next year's Dec 1st
+      if (now.getTime() > targetDate.getTime()) {
+        targetDate = new Date(targetYear + 1, 11, 1, 23, 59, 59);
+      }
+
+      const diff = targetDate.getTime() - now.getTime();
+      if (diff <= 0) {
+        daysEl.textContent = '00';
+        hoursEl.textContent = '00';
+        minutesEl.textContent = '00';
+        secondsEl.textContent = '00';
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      daysEl.textContent = String(days).padStart(2, '0');
+      hoursEl.textContent = String(hours).padStart(2, '0');
+      minutesEl.textContent = String(minutes).padStart(2, '0');
+      secondsEl.textContent = String(seconds).padStart(2, '0');
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+  }
+  initHolidayCountdown();
+
+  // 9.2 Christmas Quote Modal Open & Close Handlers
+  const christmasModalBackdrop = document.getElementById('christmasQuoteModalBackdrop');
+  const christmasModalCloseBtn = document.getElementById('christmasQuoteModalClose');
+  const openChristmasModalBtns = document.querySelectorAll('.btn-open-christmas-quote');
+
+  function openChristmasModal() {
+    if (christmasModalBackdrop) {
+      christmasModalBackdrop.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeChristmasModal() {
+    if (christmasModalBackdrop) {
+      christmasModalBackdrop.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  }
+
+  openChristmasModalBtns.forEach(btn => btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    openChristmasModal();
+  }));
+
+  if (christmasModalCloseBtn) {
+    christmasModalCloseBtn.addEventListener('click', closeChristmasModal);
+  }
+
+  if (christmasModalBackdrop) {
+    christmasModalBackdrop.addEventListener('click', (e) => {
+      if (e.target === christmasModalBackdrop) closeChristmasModal();
+    });
+  }
+
+  // 9.3 Christmas Printable Estimate Sheet Modal Handlers
+  const printableChristmasModalBackdrop = document.getElementById('printableChristmasEstimateModalBackdrop');
+  const closePrintableChristmasModalBtn = document.getElementById('closePrintableChristmasModal');
+  const triggerDownloadChristmasPdfBtn = document.getElementById('triggerDownloadChristmasPdfBtn');
+  const triggerPrintChristmasBtn = document.getElementById('triggerPrintChristmasBtn');
+  const sendChristmasWhatsAppBtn = document.getElementById('sendChristmasWhatsAppBtn');
+  let latestChristmasQuoteData = null;
+
+  function closePrintableChristmasModal() {
+    if (printableChristmasModalBackdrop) {
+      printableChristmasModalBackdrop.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  }
+
+  if (closePrintableChristmasModalBtn) {
+    closePrintableChristmasModalBtn.addEventListener('click', closePrintableChristmasModal);
+  }
+
+  if (printableChristmasModalBackdrop) {
+    printableChristmasModalBackdrop.addEventListener('click', (e) => {
+      if (e.target === printableChristmasModalBackdrop) closePrintableChristmasModal();
+    });
+  }
+
+  if (triggerPrintChristmasBtn) {
+    triggerPrintChristmasBtn.addEventListener('click', () => {
+      window.print();
+    });
+  }
+
+  // 9.4 Christmas PDF Generator via html2pdf.js
+  async function downloadChristmasPdf(quoteId) {
+    const element = document.getElementById('printableChristmasEstimateSheet');
+    if (!element) {
+      window.print();
+      return;
+    }
+    const cleanId = (quoteId || 'Holiday_Estimate').replace(/[^a-zA-Z0-9_-]/g, '');
+    if (typeof html2pdf !== 'undefined') {
+      const opt = {
+        margin: [8, 8, 8, 8],
+        filename: `Sleek_Holiday_Lights_Estimate_${cleanId}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 1.8, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      await html2pdf().set(opt).from(element).save();
+    } else {
+      window.print();
+    }
+  }
+
+  async function generateChristmasPdfBase64(quoteId) {
+    if (typeof html2pdf === 'undefined') return null;
+    const element = document.getElementById('printableChristmasEstimateSheet');
+    if (!element) return null;
+
+    try {
+      const opt = {
+        margin: [8, 8, 8, 8],
+        filename: `Sleek_Holiday_Lights_Estimate_${quoteId.replace('#', '')}.pdf`,
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: 1.8, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      const pdfDataUri = await html2pdf().set(opt).from(element).outputPdf('datauristring');
+      if (pdfDataUri && pdfDataUri.includes('base64,')) {
+        return pdfDataUri.split('base64,')[1];
+      }
+      return null;
+    } catch (err) {
+      console.warn('Christmas PDF generation warning:', err);
+      return null;
+    }
+  }
+
+  if (triggerDownloadChristmasPdfBtn) {
+    triggerDownloadChristmasPdfBtn.addEventListener('click', async () => {
+      const origHtml = triggerDownloadChristmasPdfBtn.innerHTML;
+      triggerDownloadChristmasPdfBtn.innerHTML = `<span>Downloading...</span>`;
+      triggerDownloadChristmasPdfBtn.disabled = true;
+      try {
+        await downloadChristmasPdf(latestChristmasQuoteData?.quoteId);
+      } finally {
+        triggerDownloadChristmasPdfBtn.innerHTML = origHtml;
+        triggerDownloadChristmasPdfBtn.disabled = false;
+      }
+    });
+  }
+
+  // 9.5 WhatsApp Message for Christmas Quotes
+  function buildChristmasWhatsAppMessage(q) {
+    if (!q) return 'Hello Sleek Clean! I would like to request a Christmas Light Installation quote.';
+    let msg = `🎄 *NEW CHRISTMAS LIGHT INSTALLATION LEAD - SLEEK CLEAN™*\n\n`;
+    msg += `📋 *Quote ID:* ${q.quoteId}\n`;
+    msg += `📅 *Date:* ${q.issueDate}\n\n`;
+    msg += `👤 *Client Details:*\n`;
+    msg += `• *Name:* ${q.customerName}\n`;
+    msg += `• *Phone:* ${q.customerPhone}\n`;
+    if (q.customerEmail && q.customerEmail !== 'Not provided') {
+      msg += `• *Email:* ${q.customerEmail}\n`;
+    }
+    msg += `• *Service Address:* ${q.customerAddress}\n\n`;
+    msg += `🏡 *Holiday Project Specifications:*\n`;
+    msg += `• *Stories:* ${q.stories}\n`;
+    msg += `• *Where on House:* ${q.rooflineCoverage}\n`;
+    msg += `• *Lighting Theme:* ${q.lightColor}\n`;
+    msg += `• *Referral Source:* ${q.referralSource}\n`;
+    if (q.specialNotes) msg += `• *Notes:* ${q.specialNotes}\n`;
+    msg += `\n🎁 *Special Offer:* 50% OFF Early Bird + Free Takedown & Storage!\n`;
+    msg += `💰 *Estimated Investment:* ${q.totalAmount}\n\n`;
+    msg += `Hello Sleek Clean! I just generated this Christmas lighting estimate on your website and would like to lock in my 50% Early Bird spot!`;
+    return msg;
+  }
+
+  if (sendChristmasWhatsAppBtn) {
+    sendChristmasWhatsAppBtn.addEventListener('click', async () => {
+      const origHtml = sendChristmasWhatsAppBtn.innerHTML;
+      sendChristmasWhatsAppBtn.innerHTML = `<span>Opening WhatsApp...</span>`;
+      sendChristmasWhatsAppBtn.disabled = true;
+      try {
+        await downloadChristmasPdf(latestChristmasQuoteData?.quoteId);
+        const msg = buildChristmasWhatsAppMessage(latestChristmasQuoteData);
+        const whatsappUrl = `https://api.whatsapp.com/send?phone=17272699002&text=${encodeURIComponent(msg)}`;
+        window.open(whatsappUrl, '_blank');
+      } finally {
+        sendChristmasWhatsAppBtn.innerHTML = origHtml;
+        sendChristmasWhatsAppBtn.disabled = false;
+      }
+    });
+  }
+
+  // 9.6 Generate Christmas Printable Estimate DOM
+  function generateChristmasPrintableEstimate() {
+    const firstName = document.getElementById('christmasFirstName')?.value.trim() || 'Valued';
+    const lastName = document.getElementById('christmasLastName')?.value.trim() || 'Customer';
+    const fullName = `${firstName} ${lastName}`.trim();
+    const phone = document.getElementById('christmasPhone')?.value.trim() || 'Not provided';
+    const email = document.getElementById('christmasEmail')?.value.trim() || 'Not provided';
+    const address = document.getElementById('christmasAddress')?.value.trim() || 'Tampa Bay Area';
+    const city = document.getElementById('christmasCity')?.value.trim() || 'Tampa';
+    const zip = document.getElementById('christmasZip')?.value.trim() || '';
+    const state = document.getElementById('christmasState')?.value || 'FL';
+    const fullAddress = `${address}, ${city}, ${state} ${zip}`.trim();
+
+    const stories = document.getElementById('christmasStories')?.value || '1 Story';
+    const coverage = document.getElementById('christmasCoverage')?.value || 'Front Only';
+    const color = document.getElementById('christmasColor')?.value || 'Classic Warm White';
+    const referral = document.getElementById('christmasReferral')?.value || 'Website';
+    const notes = document.getElementById('christmasNotes')?.value.trim() || '';
+
+    // Price placeholder $1 - $2 as requested by user
+    const totalAmount = '$1 - $2';
+
+    const randomId = Math.floor(1000 + Math.random() * 9000);
+    const quoteId = `#SLK-XMAS-2026-${randomId}`;
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    // Update DOM fields in #printableChristmasEstimateSheet
+    const safeSet = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    };
+
+    safeSet('printChristmasCustomerName', fullName);
+    safeSet('printChristmasCustomerPhone', phone);
+    safeSet('printChristmasCustomerEmail', email);
+    safeSet('printChristmasCustomerAddress', fullAddress);
+    safeSet('printChristmasQuoteId', quoteId);
+    safeSet('printChristmasIssueDate', dateStr);
+    safeSet('printChristmasReferral', referral);
+    safeSet('printChristmasCoverage', coverage);
+    safeSet('printChristmasColor', color);
+    safeSet('printChristmasStories', stories);
+    safeSet('printChristmasTotalAmount', totalAmount);
+
+    latestChristmasQuoteData = {
+      isHoliday: true,
+      quoteId,
+      issueDate: dateStr,
+      customerName: fullName,
+      customerPhone: phone,
+      customerEmail: email,
+      customerAddress: fullAddress,
+      stories,
+      rooflineCoverage: coverage,
+      lightColor: color,
+      referralSource: referral,
+      specialNotes: notes,
+      totalAmount,
+      duration: 'Full Turnkey Installation'
+    };
+
+    return latestChristmasQuoteData;
+  }
+
+  // 9.7 Christmas Form Submit Event Handler
+  const christmasQuoteForm = document.getElementById('christmasQuoteForm');
+  if (christmasQuoteForm) {
+    christmasQuoteForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const btn = christmasQuoteForm.querySelector('button[type="submit"]');
+      const origBtnHtml = btn ? btn.innerHTML : '';
+      const sendEmailCopy = document.getElementById('christmasSendEmailCopy')?.checked ?? true;
+      const customerEmail = document.getElementById('christmasEmail')?.value.trim() || '';
+
+      if (btn) {
+        btn.innerHTML = sendEmailCopy
+          ? `<span>Generating PDF &amp; Sending Proposal...</span>`
+          : `<span>Preparing Proposal Sheet...</span>`;
+        btn.disabled = true;
+      }
+
+      // 1. Populate printable Christmas Estimate DOM
+      const quoteData = generateChristmasPrintableEstimate();
+
+      const alertBox = document.getElementById('christmasEstimateEmailAlert');
+      const alertText = document.getElementById('christmasEstimateEmailAlertText');
+      const subtext = document.getElementById('printChristmasModalSubtext');
+
+      if (sendEmailCopy && customerEmail) {
+        // 2. Generate Christmas PDF base64
+        const pdfBase64 = await generateChristmasPdfBase64(quoteData.quoteId);
+
+        // 3. Send via Serverless function (/api/send-estimate)
+        const sendResult = await sendEstimateEmail(quoteData, pdfBase64);
+
+        if (alertBox && alertText) {
+          alertBox.style.display = 'flex';
+          if (sendResult.success) {
+            alertBox.style.backgroundColor = '#ecfdf5';
+            alertBox.style.color = '#065f46';
+            alertText.textContent = `A copy of your Christmas Light Proposal and PDF have been sent to ${customerEmail}.`;
+            if (subtext) subtext.textContent = `Proposal sent to ${customerEmail}. You can also download the PDF or send via WhatsApp.`;
+          } else if (sendResult.reason === 'local_environment') {
+            alertBox.style.backgroundColor = '#f0fdf4';
+            alertBox.style.color = '#166534';
+            alertText.textContent = `Christmas Proposal & PDF ready! (Deploy to Vercel with RESEND_API_KEY to test live emails)`;
+          } else if (sendResult.reason === 'not_configured') {
+            alertBox.style.backgroundColor = '#fef3c7';
+            alertBox.style.color = '#92400e';
+            alertText.textContent = `Christmas Proposal & PDF ready! Set RESEND_API_KEY in Vercel to activate automated emailing.`;
+          } else {
+            alertBox.style.backgroundColor = '#fef2f2';
+            alertBox.style.color = '#991b1b';
+            alertText.textContent = `Christmas proposal generated! You can download your PDF or message us directly on WhatsApp below.`;
+          }
+        }
+      } else {
+        if (alertBox) alertBox.style.display = 'none';
+        if (subtext) subtext.textContent = `You can print, download as PDF, or send your proposal via WhatsApp.`;
+      }
+
+      if (btn) {
+        btn.innerHTML = origBtnHtml;
+        btn.disabled = false;
+      }
+
+      closeChristmasModal();
+      if (printableChristmasModalBackdrop) {
+        printableChristmasModalBackdrop.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+    });
+  }
+
 });
 
 
