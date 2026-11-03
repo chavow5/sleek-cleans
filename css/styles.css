@@ -1101,20 +1101,23 @@ h1, h2, h3, h4, h5, h6 {
   flex: 0 0 calc((100% - 48px) / 3);
   min-width: 0;
   box-sizing: border-box;
-  background-color: var(--color-white);
+  background: linear-gradient(170deg, #ffffff 0%, #f4fafd 55%, #eaf6fc 100%);
   border-radius: var(--radius-lg);
   padding: 24px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--color-card-border);
+  box-shadow: 0 4px 20px rgba(45, 167, 223, 0.09), 0 2px 6px rgba(0, 0, 0, 0.03);
+  border: 1px solid #d4ebf7;
+  border-top: 4px solid var(--color-primary);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease, background 0.3s ease;
+  position: relative;
 }
 
 .reviews-slider-track .review-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 26px rgba(45, 167, 223, 0.15);
+  transform: translateY(-5px);
+  background: linear-gradient(170deg, #ffffff 0%, #edf7fc 50%, #e0f2fb 100%);
+  box-shadow: 0 12px 30px rgba(45, 167, 223, 0.22);
   border-color: var(--color-primary);
 }
 
@@ -1450,12 +1453,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .review-owner-response {
-  background-color: var(--color-primary-bg);
+  background-color: #ffffff;
+  border: 1px solid #d9edf7;
   border-left: 3px solid var(--color-primary);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
   margin-top: 8px;
   animation: fadeIn 0.25s ease;
+  box-shadow: 0 2px 8px rgba(45, 167, 223, 0.06);
 }
 
 .review-owner-response-title {
