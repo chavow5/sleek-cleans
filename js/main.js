@@ -1453,6 +1453,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Hero Background Video Autoplay Assurance
+  const heroVideo = document.querySelector('.hero-video');
+  if (heroVideo) {
+    heroVideo.muted = true;
+    const playPromise = heroVideo.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // Autoplay policy prevented playback, poster fallback remains visible
+      });
+    }
+  }
+
 });
 
 
