@@ -3418,6 +3418,93 @@ h1, h2, h3, h4, h5, h6 {
   50% { transform: scale(1.08); box-shadow: 0 0 16px rgba(220, 38, 38, 0.9); }
 }
 
+/* Hero Christmas CTA Button */
+.btn-christmas-hero {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: #ffffff !important;
+  border: 1.5px solid rgba(254, 202, 202, 0.45);
+  box-shadow: 0 4px 18px rgba(220, 38, 38, 0.45), 0 0 12px rgba(239, 68, 68, 0.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  padding: 16px 28px;
+  text-decoration: none;
+  font-weight: 800;
+  border-radius: var(--radius-pill);
+  transition: var(--transition);
+  z-index: 1;
+}
+
+.btn-christmas-hero:hover {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.65), 0 0 18px rgba(254, 240, 138, 0.35);
+}
+
+.btn-christmas-hero .btn-christmas-tree {
+  font-size: 1.25rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  animation: treeJiggle 3s infinite ease-in-out;
+}
+
+.btn-christmas-hero .btn-christmas-tag {
+  background: #fef08a;
+  color: #991b1b;
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  text-transform: uppercase;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}
+
+.btn-christmas-hero::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 40%;
+  height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: rotate(25deg);
+  animation: christmasShine 4s infinite ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes christmasShine {
+  0%, 70% { left: -60%; }
+  100% { left: 160%; }
+}
+
+@keyframes treeJiggle {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(-10deg) scale(1.1); }
+  30% { transform: rotate(8deg) scale(1.1); }
+  45% { transform: rotate(-5deg); }
+  60% { transform: rotate(0deg); }
+}
+
+@media (max-width: 480px) {
+  .btn-christmas-hero {
+    padding: 14px 20px;
+    font-size: 0.95rem;
+    gap: 8px;
+  }
+  .btn-christmas-hero .btn-christmas-tag {
+    font-size: 0.68rem;
+    padding: 2px 6px;
+  }
+}
+
 /* Top Holiday Garland */
 .holiday-garland-wrap {
   width: 100%;
